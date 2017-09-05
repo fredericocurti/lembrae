@@ -1,0 +1,258 @@
+package br.edu.insper;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class DAO {
+	private Connection connection = null;  
+	public DAO() {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e1) {
+			System.out.println("failed to setup driver");
+			e1.printStackTrace();
+		} 
+		try {
+			this.connection = DriverManager.getConnection(
+					"jdbc:mysql://localhost/notesdb", "root", "1170");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private ResultSet query(String sqlquery){
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+				stmt = connection.prepareStatement(sqlquery);
+				rs = stmt.executeQuery();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		return rs;
+	}
+	
+	public void auth(String email, String password, Callback callback) {
+		ResultSet rs = this.query(
+				String.format("SELECT * FROM Users WHERE email='%s';",email)
+				);
+		Users user = null;
+		Integer status;
+		Map<String,Object> result = new HashMap<String,Object>();
+			try {
+				if (rs.first()){
+					user = new Users(rs.getInt("ID"),rs.getString("EMAIL"),rs.getString("USERNAME"),rs.getString("PASSWORD"));
+					System.out.println("Authing user: " + user.getEmail() + "| pass: " + user.getPassword());
+					if (Objects.equals(user.getPassword(), password)){
+						System.out.println("PASSWORD MATCHED, RESPONDING OK (200)");
+						status = 200;
+					} else {
+						System.out.println("WRONG PASSWORD, RESPONDING NONAUTHORIZED (401)"); 
+						status = 401;
+					}
+					result.put("user",user);
+					result.put("status", status);
+					callback.Callback(result);
+				} else {
+					System.out.println("USER NOT FOUND, RESPONDING NOTFOUND (404)"); 
+					status = 404;
+					result.put("status", status);
+					callback.Callback(result);
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+	}
+
+	public void register(JSONObject received, Callback callback) {
+		Map<String,Object> result = new HashMap<String,Object>();
+		try {
+			PreparedStatement stmt = this.connection.prepareStatement(
+					"INSERT INTO Users(email,username,password) VALUES(?,?,?);"
+					);
+			stmt.setString(1, received.getString("email"));
+			stmt.setString(2, received.getString("username"));
+			stmt.setString(3, received.getString("password"));
+			stmt.execute();
+		} catch (SQLException e){
+			if (e.getErrorCode() == 1062){
+				System.out.println("Failed creating new user. user already exists");
+				callback.Callback(result);
+			}
+			return;
+		}
+		
+		try {
+			PreparedStatement querystmt = this.connection.prepareStatement(
+				String.format("SELECT * FROM Users where email='%s' order by id desc limit 1",received.get("email"))
+			);
+			ResultSet rs = querystmt.executeQuery();
+			if (rs.first()){
+				Users user = new Users(rs.getInt("ID"),rs.getString("EMAIL"),rs.getString("USERNAME"),rs.getString("PASSWORD"));
+				System.out.println("Created user: " + user.getEmail() + "| username: " + user.getUsername());
+				result.put("user",user);
+				callback.Callback(result);
+			} else {
+				System.out.println("There was a problem creating the user with params " + received); 
+				callback.Callback(result);
+			}
+		} catch (SQLException e){
+			e.printStackTrace();
+			e.getErrorCode();
+		}
+	}
+	
+	public void addNote(JSONObject note,Callback callback){
+		try {
+			PreparedStatement stmt = this.connection.prepareStatement(
+					"INSERT INTO Notes(user_id,content,color,private,title) VALUES(?,?,?,?,?);");
+			stmt.setInt(1,note.getInt("userId"));
+			stmt.setString(2, note.getString("content"));
+			stmt.setString(3, note.getString("color"));
+			stmt.setBoolean(4, note.getBoolean("isPrivate"));
+			stmt.setString(5, note.getString("title"));
+			stmt.execute();
+			PreparedStatement querystmt = this.connection.prepareStatement(
+				String.format("SELECT * FROM Notes JOIN Users on Users.id = Notes.user_id where user_id=%s order by notes.id desc limit 1",note.getInt("userId"))
+			);
+			ResultSet rs = querystmt.executeQuery();
+			if (rs.first()){
+				Map<String,Object> result = new HashMap<String,Object>();
+				result.put("note",new Note(
+						rs.getInt("id"),rs.getInt("user_id"),rs.getTimestamp("created_at"),
+						rs.getTimestamp("updated_at"),rs.getString("content"),rs.getString("color"),
+						rs.getBoolean("private"),rs.getString("username"),rs.getString("title")));
+				callback.Callback(result);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void getNotes(Integer uid,String requested,Callback callback) {
+		List<Note> notes = new ArrayList<Note>();
+		ResultSet rs = null;
+		Map<String,Object> result = new HashMap<String,Object>();
+		if (Objects.equals(requested, "PUBLIC_NOTES")){
+			rs = this.query (
+				String.format("SELECT * FROM Notes JOIN Users ON Users.id = Notes.user_id WHERE (user_id='%s' and private=1) or private=0;", uid)
+			);
+		}
+		
+		try {
+			while(rs.next()){
+				notes.add(new Note(rs.getInt("id"),rs.getInt("user_id"),rs.getTimestamp("created_at"),rs.getTimestamp("updated_at"),
+						rs.getString("content"),rs.getString("color"),rs.getBoolean("private"),rs.getString("username"),rs.getString("title")));
+			}
+//			notes.forEach((note)-> System.out.print(note.getTitle()));
+			result.put("notes", notes);
+			callback.Callback(result);
+			rs.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
+	
+//	public void removeNote(Integer uid) {
+//		try {
+//			PreparedStatement stmt = connection.prepareStatement(
+//					"UPDATE Notes SET content=?,color=?,private=?, title=? WHERE id=?"
+//					);
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+	
+	public void update(JSONObject received, Callback callback) {
+		Map<String,Object> result = new HashMap<String,Object>();
+		try {
+			PreparedStatement stmt = connection.prepareStatement(
+					"UPDATE Notes SET content=?,color=?,private=?, title=? WHERE id=?"
+					);
+			stmt.setString(1, received.getString("content"));
+			stmt.setString(2, received.getString("color"));
+			stmt.setBoolean(3, received.getBoolean("isPrivate"));
+			stmt.setString(4, received.getString("title"));
+			stmt.setInt(5, received.getInt("id"));
+			stmt.execute();
+			stmt.close();
+			result.put("status", "SUCCESS");
+			callback.Callback(result);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			result.put("status", "FAILURE");
+			callback.Callback(result);
+		}
+	}
+	
+//	public void registra(Users user) {
+//		String sql = "UPDATE Pessoas SET " + "nome=?, nascimento=?, altura=? WHERE id=?";
+//		PreparedStatement stmt;
+//		try {
+//			stmt = connection.prepareStatement(sql);
+//			stmt.setString(1, pessoa.getNome());
+//			stmt.execute(); 
+//			stmt.close(); 
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+	
+	public void close() { 
+		try {
+			connection.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void adiciona(Pessoas pessoa) { 
+		String sql = "INSERT INTO Pessoas" +  "(nome,nascimento,altura) values(?,?,?)";
+		try{
+			PreparedStatement stmt = connection.prepareStatement(sql);  
+			stmt.setString(1,pessoa.getNome()); 
+			stmt.setDate(2, new Date(pessoa.getNascimento().getTimeInMillis()));  
+			stmt.setDouble(3,pessoa.getAltura());  
+			stmt.execute(); 
+			stmt.close();			
+		} catch (SQLException e){
+			e.printStackTrace();
+		}
+	}
+	
+	public void remove(Integer id) {
+		PreparedStatement stmt;
+		try {
+			stmt = connection.prepareStatement("DELETE FROM Notes WHERE id=?");
+			stmt.setInt(1, id);
+			stmt.execute(); 
+			stmt.close(); 
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+	}
+	
+
+	
+}
