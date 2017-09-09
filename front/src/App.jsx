@@ -28,7 +28,6 @@ class App extends Component {
         userName : ''
       }
     }
-
   }
 
   componentWillMount() {
@@ -62,7 +61,7 @@ class App extends Component {
       } else if (result.status == 404){
         this.setState({ error : "Usuário não encontrado. Verifique se essa conta está registrada"})
       } else if (result.status == 200){
-        this.setState({ open:false, auth: auth.getUser()})
+        this.setState({ open : false, auth : auth.getUser()})
       }
     })
   }
@@ -85,11 +84,8 @@ class App extends Component {
     }
   }
 
-
   render() {
-    const actions = [
-      
-    ];
+    const actions = []
 
     const dialogContent = () => {
       if (this.state.dialogState === 'login'){

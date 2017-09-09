@@ -1,10 +1,12 @@
 import auth from './auth'
 import _ from 'lodash'
 import moment from 'moment'
-let locale = require('moment/locale/pt-br');
+import {EventEmitter} from 'events'
 
 // This file handles data manipulation
-const EventEmitter = require('events').EventEmitter
+
+let locale = require('moment/locale/pt-br');
+const baseUrl = 'http://localhost:8080/'
 const emitter = new EventEmitter();
 emitter.setMaxListeners(20)
 
@@ -13,26 +15,6 @@ var store = {
 }
 
 export default window.store = {
-    getPublicNotes : () => {
-        moment.locale('pt-BR')
-        const params = { q: 'PUBLIC_NOTES', uid:auth.getUser().id, user:auth.getUser().username };
-        const urlParams = new URLSearchParams(Object.entries(params));
-        fetch('http://localhost:8080/swogger/notes?' + urlParams, {
-            method: 'GET'
-            }).then((response) => {
-                let data = response.json().then((data) => {
-                    data.forEach((note) => {
-                        store.notes[note.id] = note
-                    })
-                emitter.emit('notes_update',store.notes)
-                })
-            })
-    },
-
-    getStore : () => {
-        return store
-    },
-
     subscribe : (storeName,callback) => {
         emitter.addListener( `${storeName}_update`, callback )
     },
@@ -41,19 +23,35 @@ export default window.store = {
         emitter.removeListener( `${storeName}_update`, callback )
     },
 
-    Note : (title,content,color,isPrivate) => {
-        return {
-            color : color,
-            content : content,
-            isPrivate : isPrivate,
-            userId : auth.getUser().id,
-            title : title
-        }
+    getStore : () => {
+        return store
+    },
+    
+    getPublicNotes : () => {
+        moment.locale('pt-BR')
+        const params = { q: 'PUBLIC_NOTES', uid:auth.getUser().id, user:auth.getUser().username }
+        const urlParams = new URLSearchParams(Object.entries(params))
+        const header = new Headers()
+        header.append("Content-Type", "application/json; charset=utf-8")
+        fetch(baseUrl+'notes?' + urlParams, {
+            headers : header,
+            method: 'GET'
+            }).then((response) => {
+                let data = response.json().then((data) => {
+                    data.forEach((note) => {
+                        store.notes[note.id] = note
+                    })
+                    emitter.emit('notes_update',store.notes)
+                })
+            })
     },
 
     addNote : (note) => {
-        fetch('http://localhost:8080/swogger/notes', {
+        const header = new Headers()
+        header.append("Content-Type", "application/json; charset=utf-8")
+        fetch(baseUrl+'notes', {
             method: 'POST',
+            headers : header,
             body : JSON.stringify({
                 action : 'ADD_NOTE',
                 payload : note
@@ -86,7 +84,7 @@ export default window.store = {
 
     updateNote : (note,callback) => {
         console.log(note)
-        fetch('http://localhost:8080/swogger/update', {
+        fetch(baseUrl+'update', {
             method: 'POST',
             body : JSON.stringify({
                 action : 'UPDATE_NOTE',
@@ -95,18 +93,17 @@ export default window.store = {
         }).then((response) => {
             var data = response.json().then((status) => {
                 store.notes[note.id] = note
-                store.notes[note.id].updatedAt = moment().valueOf()
+                store.notes[note.id].updatedAt = Date.now()
                 console.log('Note id:' + note.id + ' updated successfully')
                 emitter.emit('notes_update',store.notes)
             })
         })
-
     },
 
     removeNote : (noteId) => {
         const params = { q: 'REMOVE_NOTE', note_id : noteId };
         const urlParams = new URLSearchParams(Object.entries(params));
-        fetch('http://localhost:8080/swogger/remove?' + urlParams, {
+        fetch(baseUrl+'remove?' + urlParams, {
             method: 'GET'
             }).then((response) => {
                 let data = response.text().then((status) => {
@@ -115,6 +112,16 @@ export default window.store = {
                     emitter.emit('notes_update',store.notes)
                 })
             })
-    }
+    },
+    
+    Note : (title,content,color,isPrivate) => {
+        return {
+            color : color,
+            content : content,
+            isPrivate : isPrivate,
+            userId : auth.getUser().id,
+            title : title
+        }
+    },
 
 }

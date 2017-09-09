@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import ContentEditable from "react-contenteditable";
 import auth from './helpers/auth.js'
 import _ from 'lodash'
-import store from './helpers/store.js'
 import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
 import Popover from 'material-ui/Popover';
@@ -21,30 +20,26 @@ class Note extends Component {
             anchorEl : null
         }
 
-        this.show = true
-        this.delayedUpdate = debounce(this.update,2000)
+        this.exists = true
+        this.delayedUpdate = debounce(this.update,3000)
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps.info)
     }
     
-
-    handleTouchTap = (event) => {
+    handleOptionsOpen = (event) => {
         // This prevents ghost click.
         event.preventDefault();
-    
         this.setState({
           open: true,
           anchorEl: event.currentTarget,
-        });
-      };
-    
-    handleRequestClose = () => {
-    this.setState({
-        open: false,
         })
-    };
+    }
+    
+    handleOptionsClose = () => { 
+        this.setState({ open: false })
+    }
 
 
     handleChange = (e) => {
@@ -53,7 +48,6 @@ class Note extends Component {
             this.setState({[e.currentTarget.id]: e.target.value});
             this.delayedUpdate()
         }
-        
     }
 
     handleLockPress = () => {
@@ -62,8 +56,15 @@ class Note extends Component {
     }
 
     update = () => {
-        let newState = omit(this.state,['open','anchorEl'])
-        this.props.update(newState)
+        if (this.exists) {
+            let updatedState = omit(this.state,['open','anchorEl'])
+            this.props.update(updatedState)
+        }
+    }
+
+    handleRemove = () => {
+        this.exists = false
+        this.props.remove(this.props.info.id)
     }
 
     render() {
@@ -74,13 +75,13 @@ class Note extends Component {
                     anchorEl={this.state.anchorEl}
                     anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
                     targetOrigin={{horizontal: 'left', vertical: 'top'}}
-                    onRequestClose={this.handleRequestClose}
+                    onRequestClose={this.handleOptionsClose}
                 >
                     <Menu>
                         <MenuItem 
                             leftIcon={<FontIcon className="material-icons" > delete_forever </FontIcon>} 
                             primaryText="Remover nota" 
-                            onClick={() => { this.props.remove(this.props.info.id) } }/>
+                            onClick={this.handleRemove}/>
                             
                         <MenuItem 
                             onClick={this.handleLockPress}
@@ -90,14 +91,12 @@ class Note extends Component {
                                 </FontIcon>
                             }
                             primaryText={this.state.isPrivate ? "Tornar pública" : "Tornar privada"}
-                            left
-                            />
+                        />
 
                     </Menu>
                 </Popover>
             )
         }
-
 
         return (
             <div className='grid-item col s6 m4 l3'>
@@ -105,7 +104,7 @@ class Note extends Component {
                     style={{ backgroundColor: this.state.color, padding: 10}}
                 >
                     <div className='card-content'>
-                        <span className="card-title"> 
+                        <div className="card-title"> 
                             <ContentEditable
                                 id="title"
                                 html={this.state.title}
@@ -115,13 +114,13 @@ class Note extends Component {
                             />
                             { auth.getUser().id === this.state.userId 
                             ? 
-                            <IconButton onClick={this.handleTouchTap}>
+                            <IconButton onClick={this.handleOptionsOpen}>
                                 <FontIcon className="material-icons" > more_vert </FontIcon>
                             </IconButton>
                             : null 
                             } 
                             { popOver() }
-                        </span>
+                        </div>
                         <ContentEditable
                             id="content"
                             html={this.state.content}

@@ -1,10 +1,12 @@
 // This file handles data manipulation
 
 import store from './store'
+import {EventEmitter} from 'events'
 
-const EventEmitter = require('events').EventEmitter
 const emitter = new EventEmitter();
 emitter.setMaxListeners(20)
+
+const baseUrl = 'http://localhost:8080/'
 
 var user = { 
     id : null ,
@@ -16,7 +18,7 @@ var user = {
 export default window.auth = {
     login : (email,password,callback) => {
         console.log('Logging in with',email,password)
-        fetch('http://localhost:8080/swogger/login', {
+        fetch(baseUrl + 'login', {
             method: 'POST',
             body : JSON.stringify({
                 action : 'AUTH',
@@ -24,7 +26,7 @@ export default window.auth = {
                     email : email,
                     password : password
                 }
-                })
+            })
         }).then((response) => {
             var data = response.json().then((data) => {
                 if (data.status == 200) {
@@ -53,8 +55,8 @@ export default window.auth = {
     },
 
     register : (email,username,password,callback) => {
-        console.log('Logging in with',email,password)
-        fetch('http://localhost:8080/swogger/register', {
+        console.log('Registering with',email,password)
+        fetch(baseUrl + 'register', {
             method: 'POST',
             body : JSON.stringify({
                 action : 'REGISTER',
@@ -73,7 +75,7 @@ export default window.auth = {
                 } else if (data.status == "FAILURE") {
                     console.log('[Auth] Auth failed,error ' + data.status)
                 }
-            callback(data)
+                callback(data)
             })
         })
     },

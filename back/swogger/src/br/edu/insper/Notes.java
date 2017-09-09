@@ -1,17 +1,17 @@
 package br.edu.insper;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.json.*;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Servlet implementation class Login
@@ -73,16 +73,17 @@ public class Notes extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("POST Request received");
+		System.out.println("POST Request received - Add note");
 		// Request
 		String test = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
 		JSONObject obj = new JSONObject(test);
 		JSONObject payload = obj.getJSONObject("payload");
-		System.out.println(payload);
+//		System.out.println(payload);
 		DAO dao = new DAO();
 		// response
 		dao.addNote(payload,(Map<String,Object> result) -> {
 			try {
+				System.out.println("AQUI MEN" + new JSONObject(result.get("note")).toString());
 				response.getWriter().println(new JSONObject(result.get("note")));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

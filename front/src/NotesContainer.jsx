@@ -51,10 +51,9 @@ class NotesContainer extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState( { filter : nextProps.filter })
+        this.setState({ filter : nextProps.filter })
     }
     
-
     updateNote = (note) => {
         store.updateNote(note, (newNote) => {
             let newData = this.state.data
@@ -91,33 +90,23 @@ class NotesContainer extends Component {
     }
         
     handleNoteSubmit = (event) => {
-        if(event.key === 'Enter' && this.state.inputText != ''){
-            let currentText = this.state.inputText
-            this.setState({ inputText :  currentText + '\n'})
-        }
         if (this.state.inputText != '' && this.state.title.length <= 40){
-
             let images = _.values(this.state.images)
             let input = this.state.inputText
-
             if (images.length > 0){
                 images.forEach((img) => {
                     if (img != null) {
-                        input += `<div><img src='${img.props.image.link}' class='note-img'/></div>`
+                        input += `<img src='${img.props.image.link}' class='note-img'/>`
                     }
                 })
             }
-
             store.addNote(new store.Note (
                 this.state.title,input,this.state.inputColor,this.state.private
             ))
-
             this.setState({inputText : '', errorText: '', title: '', images : {}})
-            
         } else {
             this.setState({ errorText : this.state.errorText ? '' : "Texto vazio" + ', por favor corrija' })
-        }
-        
+        }    
     }
 
     handleLockPress = () => {
@@ -158,21 +147,15 @@ class NotesContainer extends Component {
     }
 
     render() {
-
         const masonryOptions = {
             transitionDuration: 200,
             enableResizableChildren: true,
             horizontalOrder: true
-            // gutter: 40,
-            // columnWidth:{ width : 20 + '%' }
         }
 
         const masonryStyle = {
         }
 
-        const packeryOptions = {
-            transitionDuration: 250
-        }
 
         const filteredData = () => {
             let filter = this.state.filter
@@ -183,7 +166,6 @@ class NotesContainer extends Component {
                     return o.userId == this.user.id
                 })
             }
-            
         }
         
         const colorPicker = () => {
@@ -198,8 +180,6 @@ class NotesContainer extends Component {
                 className='color-samples'
             />)            
         }
-
-        let f
 
         return (
             <div 
@@ -231,7 +211,6 @@ class NotesContainer extends Component {
                         />
 
                         <div className='row center canvas-container'>
-                            {/* <canvas onClick={(e) => console.log(e.target.attributes) } ref={(canvas) => this.canvas = canvas} id='mycanvas' width={0} height={0}></canvas> */}
                             { this.state.imageIsLoading ? <CircularProgress style={{ margin : 20 }}/> : null }
                             { _.values(this.state.images).reverse() }
                             <img className='note-input-img' src={this.state.imgSrc}/>
@@ -296,17 +275,7 @@ class NotesContainer extends Component {
                     }
                 
                 </Masonry>
-                {/* <Packery
-                className={'grid-item'} // default ''
-                elementType={'div'} // default 'div'
-                options={packeryOptions} // default {}
-                disableImagesLoaded={false} // default false>
-                >
-                    { this.state.data }
-                </Packery> */}
                 </div>
-
-                
             </div>
         );
     }
