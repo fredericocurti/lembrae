@@ -30,15 +30,7 @@ import java.io.Writer;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-<<<<<<< HEAD
 import java.util.*;
-=======
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
->>>>>>> 25515533c59f5eac67869b15f8eeb5634a475e30
 
 /**
  * A JSONArray is an ordered sequence of values. Its external text form is a

@@ -1,13 +1,9 @@
 package br.edu.insper;
-<<<<<<< HEAD
 
 import org.json.JSONObject;
-
 import java.sql.*;
 import java.sql.Date;
 import java.util.*;
-
-=======
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -24,7 +20,6 @@ import java.util.Objects;
 import org.json.JSONException;
 import org.json.JSONObject;
 
->>>>>>> 25515533c59f5eac67869b15f8eeb5634a475e30
 public class DAO {
 	private Connection connection = null;  
 	public DAO() {
@@ -62,10 +57,6 @@ public class DAO {
 				);
 		Users user = null;
 		Integer status;
-<<<<<<< HEAD
-
-=======
->>>>>>> 25515533c59f5eac67869b15f8eeb5634a475e30
 		Map<String,Object> result = new HashMap<String,Object>();
 			try {
 				if (rs.first()){

@@ -1,31 +1,15 @@
 package br.edu.insper;
 
-<<<<<<< HEAD
 import org.json.JSONObject;
-=======
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Map;
-import java.util.stream.Collectors;
->>>>>>> 25515533c59f5eac67869b15f8eeb5634a475e30
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-<<<<<<< HEAD
 import java.io.IOException;
 import java.util.Map;
 import java.util.stream.Collectors;
-=======
-
-import org.json.JSONObject;
->>>>>>> 25515533c59f5eac67869b15f8eeb5634a475e30
 
 @WebServlet("/update") 
 public class Update extends HttpServlet {   

@@ -1,6 +1,5 @@
 package org.json;
 
-<<<<<<< HEAD
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -9,14 +8,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static java.lang.String.format;
-=======
-import static java.lang.String.format;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.util.*;
->>>>>>> 25515533c59f5eac67869b15f8eeb5634a475e30
 
 /*
 Copyright (c) 2002 JSON.org
