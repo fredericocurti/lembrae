@@ -1,5 +1,6 @@
 package br.edu.insper;
 
+<<<<<<< HEAD
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -11,6 +12,21 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+=======
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Date;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+>>>>>>> 25515533c59f5eac67869b15f8eeb5634a475e30
 
 @WebServlet("/cria") 
 public class Cria extends HttpServlet {

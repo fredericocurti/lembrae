@@ -1,6 +1,15 @@
 package org.json;
 
+<<<<<<< HEAD
 import java.io.*;
+=======
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+>>>>>>> 25515533c59f5eac67869b15f8eeb5634a475e30
 
 /*
 Copyright (c) 2002 JSON.org

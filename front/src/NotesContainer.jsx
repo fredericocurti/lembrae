@@ -167,7 +167,7 @@ class NotesContainer extends Component {
                 })
             }
         }
-        
+
         const colorPicker = () => {
             let colors = ['#ffffff','#ffcdd2','#e1bee7','#bbdefb','#b2ebf2','#dcedc8','#ff7f13','#feff89','#ffeb3b']
             // let colors = ['#ffffff','#b973b3','#feff89','#ff28ad','#a4e631','#ffe600','#ff7f13','#afffff']
@@ -180,7 +180,7 @@ class NotesContainer extends Component {
                 className='color-samples'
             />)            
         }
-
+        
         return (
             <div 
                 style={ this.props.margin ? { marginLeft:275,marginRight:25 } : { marginLeft : 0 }}

@@ -183,9 +183,6 @@ class App extends Component {
                 />
               </div>
           </span>
-
-
-
           )
         }
     }

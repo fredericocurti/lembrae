@@ -1,17 +1,29 @@
 package br.edu.insper;
 
+<<<<<<< HEAD
 import org.json.JSONArray;
 import org.json.JSONObject;
+=======
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+>>>>>>> 25515533c59f5eac67869b15f8eeb5634a475e30
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+<<<<<<< HEAD
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+=======
+import org.json.*;
+>>>>>>> 25515533c59f5eac67869b15f8eeb5634a475e30
 
 /**
  * Servlet implementation class Login
@@ -73,17 +85,28 @@ public class Notes extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+<<<<<<< HEAD
 		System.out.println("POST Request received - Add note");
+=======
+		System.out.println("POST Request received");
+>>>>>>> 25515533c59f5eac67869b15f8eeb5634a475e30
 		// Request
 		String test = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
 		JSONObject obj = new JSONObject(test);
 		JSONObject payload = obj.getJSONObject("payload");
+<<<<<<< HEAD
 //		System.out.println(payload);
+=======
+		System.out.println(payload);
+>>>>>>> 25515533c59f5eac67869b15f8eeb5634a475e30
 		DAO dao = new DAO();
 		// response
 		dao.addNote(payload,(Map<String,Object> result) -> {
 			try {
+<<<<<<< HEAD
 				System.out.println("AQUI MEN" + new JSONObject(result.get("note")).toString());
+=======
+>>>>>>> 25515533c59f5eac67869b15f8eeb5634a475e30
 				response.getWriter().println(new JSONObject(result.get("note")));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
