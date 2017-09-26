@@ -8,6 +8,8 @@ import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import moment from 'moment'
+import ReactMarkdown from'react-markdown';
+
 const debounce = require('lodash/debounce');
 const omit = require('lodash/omit')
 
@@ -16,48 +18,50 @@ class Note extends Component {
         super(props);
         this.state = {
             ...this.props.info,
-            open : false,
-            anchorEl : null
+            open: false,
+            anchorEl: null,
+            showEditableContent: false,
         }
 
         this.exists = true
-        this.delayedUpdate = debounce(this.update,3000)
+        this.delayedUpdate = debounce(this.update, 3000)
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps.info)
     }
-    
+
     handleOptionsOpen = (event) => {
         // This prevents ghost click.
         event.preventDefault();
         this.setState({
-          open: true,
-          anchorEl: event.currentTarget,
+            open: true,
+            anchorEl: event.currentTarget,
         })
     }
-    
-    handleOptionsClose = () => { 
+
+    handleOptionsClose = () => {
         this.setState({ open: false })
     }
 
 
     handleChange = (e) => {
         e.preventDefault()
-        if ( this.state[e.currentTarget.id] != e.target.value ){
-            this.setState({[e.currentTarget.id]: e.target.value});
+        if (this.state[e.currentTarget.id] != e.target.value) {
+            this.setState({ [e.currentTarget.id]: e.target.value });
             this.delayedUpdate()
         }
     }
 
     handleLockPress = () => {
-        this.setState({ isPrivate : !this.state.isPrivate })
+        this.setState({ isPrivate: !this.state.isPrivate })
         this.delayedUpdate()
     }
 
     update = () => {
         if (this.exists) {
-            let updatedState = omit(this.state,['open','anchorEl'])
+            this.setState({ showEditableContent: false })
+            let updatedState = omit(this.state, ['open', 'anchorEl'])
             this.props.update(updatedState)
         }
     }
@@ -73,21 +77,21 @@ class Note extends Component {
                 <Popover
                     open={this.state.open}
                     anchorEl={this.state.anchorEl}
-                    anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                    targetOrigin={{horizontal: 'left', vertical: 'top'}}
+                    anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+                    targetOrigin={{ horizontal: 'left', vertical: 'top' }}
                     onRequestClose={this.handleOptionsClose}
                 >
                     <Menu>
-                        <MenuItem 
-                            leftIcon={<FontIcon className="material-icons" > delete_forever </FontIcon>} 
-                            primaryText="Remover nota" 
-                            onClick={this.handleRemove}/>
-                            
-                        <MenuItem 
+                        <MenuItem
+                            leftIcon={<FontIcon className="material-icons" > delete_forever </FontIcon>}
+                            primaryText="Remover nota"
+                            onClick={this.handleRemove} />
+
+                        <MenuItem
                             onClick={this.handleLockPress}
                             leftIcon={
-                                <FontIcon className="material-icons" > 
-                                    {this.state.isPrivate ? 'lock' : 'lock_open'} 
+                                <FontIcon className="material-icons" >
+                                    {this.state.isPrivate ? 'lock' : 'lock_open'}
                                 </FontIcon>
                             }
                             primaryText={this.state.isPrivate ? "Tornar pública" : "Tornar privada"}
@@ -101,45 +105,56 @@ class Note extends Component {
         return (
             <div className='grid-item col s6 m4 l3'>
                 <div className='card multiline'
-                    style={{ backgroundColor: this.state.color, padding: 10}}
+                    style={{ backgroundColor: this.state.color, padding: 10 }}
                 >
                     <div className='card-content'>
-                        <div className="card-title"> 
+                        <div className="card-title">
                             <ContentEditable
                                 id="title"
                                 html={this.state.title}
-                                disabled={ auth.getUser().id === this.state.userId ? false : true }
+                                disabled={auth.getUser().id === this.state.userId ? false : true}
                                 onChange={this.handleChange}
-                                style={{wordWrap: 'break-word'}}
+                                style={{ wordWrap: 'break-word' }}
                             />
-                            { auth.getUser().id === this.state.userId 
-                            ? 
-                            <IconButton onClick={this.handleOptionsOpen}>
-                                <FontIcon className="material-icons" > more_vert </FontIcon>
-                            </IconButton>
-                            : null 
-                            } 
-                            { popOver() }
-                        </div>
-                        <ContentEditable
-                            id="content"
-                            html={this.state.content}
-                            disabled={ auth.getUser().id === this.state.userId ? false : true }
-                            onChange={this.handleChange}
-                            className='note-content'
-                        />
-                        <div className='divider'/>
-                        <div className='card-footer'>
-                            { moment(this.state.updatedAt).isSame(moment(this.state.createdAt)) 
-                            ? <span> Criado por <b>{ this.state.ownerUsername } </b> { moment(this.state.createdAt).fromNow() } </span>
-                            : <span> Atualizado por <b>{ this.state.ownerUsername }</b> { moment(this.state.updatedAt).fromNow() } </span>
+                            {auth.getUser().id === this.state.userId
+                                ?
+                                <IconButton onClick={this.handleOptionsOpen}>
+                                    <FontIcon className="material-icons" > more_vert </FontIcon>
+                                </IconButton>
+                                : null
                             }
-                            <div style={{textAlign : 'right'}}> 
+                            {popOver()}
+                        </div>
+
+                        {this.state.showEditableContent ?
+                            <ContentEditable
+                                id="content"
+                                html={this.state.content}
+                                disabled={auth.getUser().id === this.state.userId ? false : true}
+                                onChange={this.handleChange}
+                                className='note-content'
+                            />
+                            :
+                            <div onClick={() => this.setState({ showEditableContent: true })}>
+                                <ReactMarkdown source={this.state.content} />
+                            </div>
+                        }
+
+
+
+
+                        <div className='divider' />
+                        <div className='card-footer'>
+                            {moment(this.state.updatedAt).isSame(moment(this.state.createdAt))
+                                ? <span> Criado por <b>{this.state.ownerUsername} </b> {moment(this.state.createdAt).fromNow()} </span>
+                                : <span> Atualizado por <b>{this.state.ownerUsername}</b> {moment(this.state.updatedAt).fromNow()} </span>
+                            }
+                            <div style={{ textAlign: 'right' }}>
                             </div>
                         </div>
-                    </div>                
+                    </div>
+                </div>
             </div>
-        </div>
         );
     }
 }
