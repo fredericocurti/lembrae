@@ -8,7 +8,7 @@ import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import moment from 'moment'
-var ReactMarkdown = require('react-markdown');
+import ReactMarkdown from'react-markdown';
 
 const debounce = require('lodash/debounce');
 const omit = require('lodash/omit')
