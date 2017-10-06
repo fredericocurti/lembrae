@@ -34,7 +34,7 @@ public class DAO {
 			e1.printStackTrace();
 		}
 		try {
-			this.connection = DriverManager.getConnection("jdbc:mysql://localhost/notesdb", "root", "1170");
+			this.connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/notesdb", "root", "1234");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -52,7 +52,8 @@ public class DAO {
 					sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
 				}
 				String generatedPassword = sb.toString();
-				System.out.println("hash" + generatedPassword);
+				System.out.println("hash: " + generatedPassword);
+				System.out.println("deveria ser string: " + generatedPassword.getClass().getName());
 				return generatedPassword;
 			} catch (UnsupportedEncodingException e) {
 				// TODO Auto-generated catch block
@@ -85,13 +86,12 @@ public class DAO {
 		Map<String, Object> result = new HashMap<String, Object>();
 		try {
 			if (rs.first()) {
-				String hashPassword = rs.getString("PASSWORD");
 				user = new Users(rs.getInt("ID"), rs.getString("EMAIL"), rs.getString("USERNAME"),
 						rs.getString("PASSWORD"));
 				
-				String stuff = hashSha(hashPassword);
+				String hash = hashSha(password);
 				System.out.println("Authing user: " + user.getEmail() + "| pass: " + user.getPassword());
-				if (Objects.equals(user.getPassword(), password)) {
+				if (Objects.equals(user.getPassword(), hash)) {
 					System.out.println("PASSWORD MATCHED, RESPONDING OK (200)");
 					status = 200;
 				} else {
@@ -120,7 +120,7 @@ public class DAO {
 					.prepareStatement("INSERT INTO Users(email,username,password) VALUES(?,?,?);");
 			stmt.setString(1, received.getString("email"));
 			stmt.setString(2, received.getString("username"));
-			stmt.setString(3, received.getString("password"));
+			stmt.setString(3, hashSha(received.getString("password")));
 			stmt.execute();
 		} catch (SQLException e) {
 			if (e.getErrorCode() == 1062) {
@@ -134,7 +134,7 @@ public class DAO {
 			PreparedStatement querystmt = this.connection.prepareStatement(String
 					.format("SELECT * FROM Users where email='%s' order by id desc limit 1", received.get("email")));
 			ResultSet rs = querystmt.executeQuery();
-			if (rs.first()) {
+			if (rs.first()) { 
 				Users user = new Users(rs.getInt("ID"), rs.getString("EMAIL"), rs.getString("USERNAME"),
 						rs.getString("PASSWORD"));
 				System.out.println("Created user: " + user.getEmail() + "| username: " + user.getUsername());
