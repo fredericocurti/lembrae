@@ -41,6 +41,19 @@ public class DAO {
 		}
 	}
 	
+	private String getSalt() { // gera um salt aleatorio
+        String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        StringBuilder salt = new StringBuilder();
+        Random rnd = new Random();
+        while (salt.length() < 18) { // length of the random string.
+            int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+            salt.append(SALTCHARS.charAt(index));
+        }
+        String saltStr = salt.toString();
+        return saltStr;
+
+    }
+	
 	private String hashSha (String soonToBeHash){
 		MessageDigest md;
 		try {
@@ -54,6 +67,8 @@ public class DAO {
 				String generatedPassword = sb.toString();
 				System.out.println("hash: " + generatedPassword);
 				System.out.println("deveria ser string: " + generatedPassword.getClass().getName());
+				
+				
 				return generatedPassword;
 			} catch (UnsupportedEncodingException e) {
 				// TODO Auto-generated catch block
@@ -87,11 +102,12 @@ public class DAO {
 		try {
 			if (rs.first()) {
 				user = new Users(rs.getInt("ID"), rs.getString("EMAIL"), rs.getString("USERNAME"),
-						rs.getString("PASSWORD"));
+						rs.getString("PASSWORD"),rs.getString("SALT"));
 				
-				String hash = hashSha(password);
+				String salt = user.getSalt();
 				System.out.println("Authing user: " + user.getEmail() + "| pass: " + user.getPassword());
-				if (Objects.equals(user.getPassword(), hash)) {
+				System.out.println("User: " + user.getId());
+				if (Objects.equals(user.getPassword(), hashSha(password + salt))) {
 					System.out.println("PASSWORD MATCHED, RESPONDING OK (200)");
 					status = 200;
 				} else {
@@ -116,11 +132,13 @@ public class DAO {
 	public void register(JSONObject received, Callback callback) {
 		Map<String, Object> result = new HashMap<String, Object>();
 		try {
+			String salt = getSalt();
 			PreparedStatement stmt = this.connection
-					.prepareStatement("INSERT INTO Users(email,username,password) VALUES(?,?,?);");
+					.prepareStatement("INSERT INTO Users(email,username,password,salt) VALUES(?,?,?,?);");
 			stmt.setString(1, received.getString("email"));
 			stmt.setString(2, received.getString("username"));
-			stmt.setString(3, hashSha(received.getString("password")));
+			stmt.setString(3, hashSha(received.getString("password") + salt));
+			stmt.setString(4, salt);
 			stmt.execute();
 		} catch (SQLException e) {
 			if (e.getErrorCode() == 1062) {
@@ -136,7 +154,7 @@ public class DAO {
 			ResultSet rs = querystmt.executeQuery();
 			if (rs.first()) { 
 				Users user = new Users(rs.getInt("ID"), rs.getString("EMAIL"), rs.getString("USERNAME"),
-						rs.getString("PASSWORD"));
+						rs.getString("PASSWORD"),rs.getString("salt"));
 				System.out.println("Created user: " + user.getEmail() + "| username: " + user.getUsername());
 				result.put("user", user);
 				callback.Callback(result);
