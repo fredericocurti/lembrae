@@ -102,7 +102,7 @@ public class DAO {
 		try {
 			if (rs.first()) {
 				user = new Users(rs.getInt("ID"), rs.getString("EMAIL"), rs.getString("USERNAME"),
-						rs.getString("PASSWORD"),rs.getString("SALT"));
+						rs.getString("PASSWORD"),rs.getString("SALT"), rs.getString("AVATAR"));
 				
 				String salt = user.getSalt();
 				System.out.println("Authing user: " + user.getEmail() + "| pass: " + user.getPassword());
@@ -134,11 +134,12 @@ public class DAO {
 		try {
 			String salt = getSalt();
 			PreparedStatement stmt = this.connection
-					.prepareStatement("INSERT INTO Users(email,username,password,salt) VALUES(?,?,?,?);");
+					.prepareStatement("INSERT INTO Users(email,username,password,salt,avatar) VALUES(?,?,?,?,?);");
 			stmt.setString(1, received.getString("email"));
 			stmt.setString(2, received.getString("username"));
 			stmt.setString(3, hashSha(received.getString("password") + salt));
 			stmt.setString(4, salt);
+			stmt.setString(5, received.getString("avatar"));
 			stmt.execute();
 		} catch (SQLException e) {
 			if (e.getErrorCode() == 1062) {
@@ -154,7 +155,7 @@ public class DAO {
 			ResultSet rs = querystmt.executeQuery();
 			if (rs.first()) { 
 				Users user = new Users(rs.getInt("ID"), rs.getString("EMAIL"), rs.getString("USERNAME"),
-						rs.getString("PASSWORD"),rs.getString("salt"));
+						rs.getString("PASSWORD"),rs.getString("salt"), rs.getString("AVATAR"));
 				System.out.println("Created user: " + user.getEmail() + "| username: " + user.getUsername());
 				result.put("user", user);
 				callback.Callback(result);
