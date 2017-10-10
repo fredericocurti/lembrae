@@ -6,3 +6,5 @@ scrip de alteração:
 ALTER TABLE users MODIFY password CHAR(128);
 
 ALTER TABLE users ADD COLUMN salt CHAR(32) AFTER username;
+
+ALTER TABLE users ADD COLUMN avatar VARCHAR (30);
