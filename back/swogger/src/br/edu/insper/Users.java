@@ -46,7 +46,7 @@ public class Users {
 	public void setSalt(String salt) {
 		this.salt = salt;
 	}
-	public String getAvatar() {
+		public String getAvatar() {
 		return avatar;
 	}
 	public void setAvatar(String avatar) {

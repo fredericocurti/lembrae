@@ -34,7 +34,7 @@ public class DAO {
 			e1.printStackTrace();
 		}
 		try {
-			this.connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/notesdb", "root", "1234");
+			this.connection = DriverManager.getConnection("jdbc:mysql://localhost/lembrae", "root", "root");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -102,7 +102,7 @@ public class DAO {
 		try {
 			if (rs.first()) {
 				user = new Users(rs.getInt("ID"), rs.getString("EMAIL"), rs.getString("USERNAME"),
-						rs.getString("PASSWORD"),rs.getString("SALT"), rs.getString("AVATAR"));
+						rs.getString("PASSWORD"),rs.getString("SALT"), rs.getString("avatar"));
 				
 				String salt = user.getSalt();
 				System.out.println("Authing user: " + user.getEmail() + "| pass: " + user.getPassword());
@@ -139,23 +139,39 @@ public class DAO {
 			stmt.setString(2, received.getString("username"));
 			stmt.setString(3, hashSha(received.getString("password") + salt));
 			stmt.setString(4, salt);
-			stmt.setString(5, received.getString("avatar"));
+			System.out.println("oi");
+			try{
+				stmt.setString(5, received.getString("avatar"));
+			}
+			catch(JSONException e){
+				e.printStackTrace();
+				stmt.setString(5, "https://i.imgur.com/qbjmIEA.png");
+			}
+			//System.out.println(received.getString("avatar"));
+			//if (received.getString("avatar") != null){
+			//	stmt.setString(5, received.getString("avatar"));
+			//}
+			//else{
+			//	stmt.setString(5, "NULL");
+			//}
+			
 			stmt.execute();
 		} catch (SQLException e) {
+			e.printStackTrace();
 			if (e.getErrorCode() == 1062) {
 				System.out.println("Failed creating new user. user already exists");
 				callback.Callback(result);
 			}
 			return;
 		}
-
+		System.out.println("cheguei aqui");
 		try {
 			PreparedStatement querystmt = this.connection.prepareStatement(String
 					.format("SELECT * FROM Users where email='%s' order by id desc limit 1", received.get("email")));
 			ResultSet rs = querystmt.executeQuery();
 			if (rs.first()) { 
 				Users user = new Users(rs.getInt("ID"), rs.getString("EMAIL"), rs.getString("USERNAME"),
-						rs.getString("PASSWORD"),rs.getString("salt"), rs.getString("AVATAR"));
+						rs.getString("PASSWORD"),rs.getString("salt"),rs.getString("avatar"));
 				System.out.println("Created user: " + user.getEmail() + "| username: " + user.getUsername());
 				result.put("user", user);
 				callback.Callback(result);
@@ -180,7 +196,7 @@ public class DAO {
 			stmt.setString(5, note.getString("title"));
 			stmt.execute();
 			PreparedStatement querystmt = this.connection.prepareStatement(String.format(
-					"SELECT * FROM Notes JOIN Users on Users.id = Notes.user_id where user_id=%s order by notes.id desc limit 1",
+					"SELECT * FROM Notes JOIN Users on Users.ID = Notes.user_id where user_id=%s order by Notes.id desc limit 1",
 					note.getInt("userId")));
 			ResultSet rs = querystmt.executeQuery();
 			if (rs.first()) {
