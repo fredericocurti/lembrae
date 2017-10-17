@@ -21,12 +21,12 @@ class Note extends Component {
             ...this.props.info,
             open: false,
             showComments: false,
+            typedCommentary: '',
             anchorEl: null
         }
 
         this.exists = true
         this.delayedUpdate = debounce(this.update, 3000)
-        this.typedCommentary = '';
     }
 
     componentWillReceiveProps(nextProps) {
@@ -70,11 +70,34 @@ class Note extends Component {
     }
 
     handleCommentaryChange = (event) => {
+        this.setState({
+            typedCommentary : event.target.value,
+        });
+    };
+
+    handleCommentaryClick = (index) => {
+        var jsonstr = this.state.commentary
+        var obj = JSON.parse(jsonstr)
+        obj.commentary.splice(index, 1)
+        jsonstr = JSON.stringify(obj)
         this.setState({ 
-            commentary : event.target.value,
-            errorText : this.state.commentary.length > 40 ? "Você atingiu o tamanho máximo para o título" : null 
+            commentary : jsonstr,
         })
+        this.delayedUpdate()
+    };
+
+    handleCommentarySubmit = (event) => {
+        var jsonstr = this.state.commentary
+        var obj = JSON.parse(jsonstr)
+        obj["commentary"].push({"content":this.state.typedCommentary,"user":auth.getUser().username})
+        jsonstr = JSON.stringify(obj)
+        this.setState({ 
+            commentary : jsonstr,
+            typedCommentary : ''
+        })
+        this.delayedUpdate()
     }
+
 
     update = () => {
         if (this.exists) {
@@ -99,10 +122,12 @@ class Note extends Component {
                     onRequestClose={this.handleOptionsClose}
                 >
                     <Menu>
+                    {auth.getUser().id === this.state.userId ?
+                        <div>
                         <MenuItem
-                            leftIcon={<FontIcon className="material-icons" > delete_forever </FontIcon>}
-                            primaryText="Remover nota"
-                            onClick={this.handleRemove} />
+                        leftIcon={<FontIcon className="material-icons" > delete_forever </FontIcon>}
+                        primaryText="Remover nota"
+                        onClick={this.handleRemove} />
 
                         <MenuItem
                             onClick={this.handleLockPress}
@@ -111,19 +136,21 @@ class Note extends Component {
                                     {this.state.isPrivate ? 'lock' : 'lock_open'}
                                 </FontIcon>
                             }
-                            primaryText={this.state.isPrivate ? "Tornar pública" : "Tornar privada"}
-                        />
+                            primaryText={this.state.isPrivate ? "Tornar pública" : "Tornar privada"} />
 
                         <MenuItem
                             leftIcon={<FontIcon className="material-icons" > check </FontIcon>}
                             primaryText={this.state.isConcluded ? "Resumir Nota" : "Concluir Nota"}
                             onClick={this.handleConclusion} />
-                        
+                        </div>
+                        : null
+                    }
+                    {this.state.isPrivate ? null :
                         <MenuItem
                             leftIcon={<FontIcon className="material-icons" > commentary </FontIcon>}
                             primaryText={this.state.showComments ? "Esconder Comentários" : "Mostrar Comentários"}
                             onClick={this.handleShowComments} />
-
+                    }
                     </Menu>
                 </Popover>
             )
@@ -134,6 +161,9 @@ class Note extends Component {
         } else {
             var checked = '';
         }
+
+        var obj = JSON.parse(this.state.commentary);
+        var commentary = obj.commentary;
 
         return (
             <div className='grid-item col s6 m4 l3'>
@@ -148,15 +178,10 @@ class Note extends Component {
                                 html={this.state.title}
                                 disabled={auth.getUser().id === this.state.userId ? false : true}
                                 onChange={this.handleChange}
-                                style={{ wordWrap: 'break-word' }}
                             />
-                            {auth.getUser().id === this.state.userId
-                                ?
-                                <IconButton onClick={this.handleOptionsOpen}>
-                                    <FontIcon className="material-icons" > more_vert </FontIcon>
-                                </IconButton>
-                                : null
-                            }
+                            <IconButton onClick={this.handleOptionsOpen}>
+                                <FontIcon className="material-icons" > more_vert </FontIcon>
+                            </IconButton>
                             {popOver()}
                         </div>
 
@@ -180,20 +205,16 @@ class Note extends Component {
                         {this.state.showComments ? <div className='divider' /> : null }
                         {this.state.showComments ?
                         <List>
-                            <ListItem
-                                primaryText={this.state.ownerUsername}
-                                secondaryText={this.state.commentary}
-                                disabled='true'
-                            />
+                            {commentary.map((comment, index) => 
+                            <ListItem key={'list-'+index} primaryText={comment.user} secondaryText={comment.content} onClick={this.handleCommentaryClick.bind(this, index)} />)}
                             <TextField
-                                multiline
                                 id="text-field-controlled"
-                                value={this.state.commentary}
+                                value={this.state.typedCommentary}
                                 onChange={this.handleCommentaryChange}
                                 className='note-input-commentary' //fazer no css
                                 hintText='Insira um comentário...'
-                                underlineStyle={{width:70+'%',color:'#808080'}}
-                                underlineFocusStyle={{width:70+'%',borderColor:'#808080'}}
+                                underlineStyle={{width:95+'%',color:'#808080'}}
+                                underlineFocusStyle={{width:95+'%',borderColor:'#808080'}}
                             />
                             <IconButton style={{position: "absolute", bottom: 0, right: 0}} onClick={this.handleCommentarySubmit}>
                                 <FontIcon className="material-icons" >add</FontIcon>

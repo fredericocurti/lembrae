@@ -125,7 +125,7 @@ public class DAO {
 	public void addNote(JSONObject note,Callback callback){
 		try {
 			PreparedStatement stmt = this.connection.prepareStatement(
-					"INSERT INTO Notes(user_id,content,color,private, concluded, commentary, title) VALUES(?,?,?,?,?,?);");
+					"INSERT INTO Notes(user_id,content,color,private, concluded, commentary, title) VALUES(?,?,?,?,?,?,?);");
 			stmt.setInt(1,note.getInt("userId"));
 			stmt.setString(2, note.getString("content"));
 			stmt.setString(3, note.getString("color"));
