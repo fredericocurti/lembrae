@@ -12,9 +12,10 @@ public class Note {
 	private Boolean isPrivate;
 	private String ownerUsername;
 	private String title;
+	private String lastUser;
 	
 	public Note(Integer id,Integer userId,Timestamp createdAt,Timestamp updatedAt,String content,String color,
-			Boolean isPrivate,String ownerUsername,String title){
+			Boolean isPrivate,String ownerUsername,String title, String lastUser){
 		this.id = id;
 		this.userId = userId;
 		this.createdAt = createdAt.getTime();
@@ -24,6 +25,7 @@ public class Note {
 		this.isPrivate = isPrivate;
 		this.ownerUsername = ownerUsername;
 		this.title = title;
+		this.lastUser = lastUser;
 	}
 
 	public Integer getId() {
@@ -94,8 +96,17 @@ public class Note {
 		this.title = title;
 	}
 	
+	
 	public String getTitle(){
 		return this.title;
+	}
+	
+	public String getlastUser(){
+		return this.lastUser;
+	}
+	
+	public void setlastUser(String lastUser){
+		this.lastUser = lastUser;
 	}
 	
 

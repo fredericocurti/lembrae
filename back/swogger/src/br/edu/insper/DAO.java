@@ -34,7 +34,7 @@ public class DAO {
 			e1.printStackTrace();
 		}
 		try {
-			this.connection = DriverManager.getConnection("jdbc:mysql://localhost/lembrae", "root", "root");
+			this.connection = DriverManager.getConnection("jdbc:mysql://localhost/notesdb", "root", "1111");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -141,7 +141,7 @@ public class DAO {
 			stmt.setString(4, salt);
 			System.out.println("oi");
 			try{
-				stmt.setString(5, received.getString("avatar"));
+					stmt.setString(5, received.getString("avatar"));
 			}
 			catch(JSONException e){
 				e.printStackTrace();
@@ -188,12 +188,13 @@ public class DAO {
 	public void addNote(JSONObject note, Callback callback) {
 		try {
 			PreparedStatement stmt = this.connection
-					.prepareStatement("INSERT INTO Notes(user_id,content,color,private,title) VALUES(?,?,?,?,?);");
+					.prepareStatement("INSERT INTO Notes(user_id,content,color,private,title,last_user) VALUES(?,?,?,?,?,?);");
 			stmt.setInt(1, note.getInt("userId"));
 			stmt.setString(2, note.getString("content"));
 			stmt.setString(3, note.getString("color"));
 			stmt.setBoolean(4, note.getBoolean("isPrivate"));
 			stmt.setString(5, note.getString("title"));
+			stmt.setString(6, note.getString("lastUser"));
 			stmt.execute();
 			PreparedStatement querystmt = this.connection.prepareStatement(String.format(
 					"SELECT * FROM Notes JOIN Users on Users.ID = Notes.user_id where user_id=%s order by Notes.id desc limit 1",
@@ -204,7 +205,7 @@ public class DAO {
 				result.put("note",
 						new Note(rs.getInt("id"), rs.getInt("user_id"), rs.getTimestamp("created_at"),
 								rs.getTimestamp("updated_at"), rs.getString("content"), rs.getString("color"),
-								rs.getBoolean("private"), rs.getString("username"), rs.getString("title")));
+								rs.getBoolean("private"), rs.getString("username"), rs.getString("title"),rs.getString("last_user")));
 				callback.Callback(result);
 			}
 		} catch (SQLException e) {
@@ -227,10 +228,13 @@ public class DAO {
 			while (rs.next()) {
 				notes.add(new Note(rs.getInt("id"), rs.getInt("user_id"), rs.getTimestamp("created_at"),
 						rs.getTimestamp("updated_at"), rs.getString("content"), rs.getString("color"),
-						rs.getBoolean("private"), rs.getString("username"), rs.getString("title")));
+						rs.getBoolean("private"), rs.getString("username"), rs.getString("title"),rs.getString("last_user")));
+				System.out.println(rs.getString("last_user"));
+				
 			}
 			// notes.forEach((note)-> System.out.print(note.getTitle()));
 			result.put("notes", notes);
+			System.out.println(notes.get(0).getlastUser());
 			callback.Callback(result);
 			rs.close();
 		} catch (SQLException e) {
@@ -254,12 +258,13 @@ public class DAO {
 		Map<String, Object> result = new HashMap<String, Object>();
 		try {
 			PreparedStatement stmt = connection
-					.prepareStatement("UPDATE Notes SET content=?,color=?,private=?, title=? WHERE id=?");
+					.prepareStatement("UPDATE Notes SET content=?,color=?,private=?, title=?, last_user=? WHERE id=?");
 			stmt.setString(1, received.getString("content"));
 			stmt.setString(2, received.getString("color"));
 			stmt.setBoolean(3, received.getBoolean("isPrivate"));
 			stmt.setString(4, received.getString("title"));
-			stmt.setInt(5, received.getInt("id"));
+			stmt.setString(5, received.getString("lastUser"));
+			stmt.setInt(6, received.getInt("id"));
 			stmt.execute();
 			stmt.close();
 			result.put("status", "SUCCESS");
