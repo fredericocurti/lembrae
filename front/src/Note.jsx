@@ -49,7 +49,9 @@ class Note extends Component {
         e.preventDefault()
         if (this.state[e.currentTarget.id] != e.target.value) {
             this.setState({ [e.currentTarget.id]: e.target.value });
+            this.setState({lastUser: auth.getUser().username})
             this.delayedUpdate()
+            
         }
     }
 
@@ -65,6 +67,7 @@ class Note extends Component {
             this.props.update(updatedState)
         }
     }
+
 
     handleRemove = () => {
         this.exists = false
@@ -101,7 +104,6 @@ class Note extends Component {
                 </Popover>
             )
         }
-
         return (
             <div className='grid-item col s6 m4 l3'>
                 <div className='card multiline'
@@ -112,7 +114,7 @@ class Note extends Component {
                             <ContentEditable
                                 id="title"
                                 html={this.state.title}
-                                disabled={auth.getUser().id === this.state.userId ? false : true}
+                                disabled={this.state.isPrivate}
                                 onChange={this.handleChange}
                                 style={{ wordWrap: 'break-word' }}
                             />
@@ -130,7 +132,7 @@ class Note extends Component {
                             <ContentEditable
                                 id="content"
                                 html={this.state.content}
-                                disabled={auth.getUser().id === this.state.userId ? false : true}
+                                disabled={this.state.isPrivate}
                                 onChange={this.handleChange}
                                 className='note-content'
                             />
@@ -147,7 +149,7 @@ class Note extends Component {
                         <div className='card-footer'>
                             {moment(this.state.updatedAt).isSame(moment(this.state.createdAt))
                                 ? <span> Criado por <b>{this.state.ownerUsername} </b> {moment(this.state.createdAt).fromNow()} </span>
-                                : <span> Atualizado por <b>{this.state.ownerUsername}</b> {moment(this.state.updatedAt).fromNow()} </span>
+                                : <span> Atualizado por <b>{this.state.lastUser}</b> {moment(this.state.updatedAt).fromNow()} </span>
                             }
                             <div style={{ textAlign: 'right' }}>
                             </div>

@@ -114,12 +114,13 @@ export default window.store = {
     })
   },
 
-  Note: (title, content, color, isPrivate) => {
+  Note: (title, content, color, isPrivate, lastUser) => {
     return {
       color: color,
       content: content,
       isPrivate: isPrivate,
       userId: auth.getUser().id,
+      lastUser: lastUser,
       title: title
     }
   }

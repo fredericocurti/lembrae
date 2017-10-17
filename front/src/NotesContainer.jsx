@@ -24,6 +24,7 @@ class NotesContainer extends Component {
             errorText: null,
             inputColor: '#ffffff',
             private: false,
+            lastUser: '',
             title : '',
             imageIsLoading : false,
             images : {},
@@ -101,7 +102,7 @@ class NotesContainer extends Component {
                 })
             }
             store.addNote(new store.Note (
-                this.state.title,input,this.state.inputColor,this.state.private
+                this.state.title,input,this.state.inputColor,this.state.private,this.state.lastUser
             ))
             this.setState({inputText : '', errorText: '', title: '', images : {}})
         } else {
