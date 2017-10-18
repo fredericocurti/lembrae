@@ -33,7 +33,7 @@ public class DAO {
 			e1.printStackTrace();
 		} 
 		try {
-			this.connection = DriverManager.getConnection("jdbc:mysql://localhost/notesdb", "root", "674074");
+			this.connection = DriverManager.getConnection("jdbc:mysql://localhost/notesdb", "root", "07061997");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -137,7 +137,6 @@ public class DAO {
 			stmt.setString(2, received.getString("username"));
 			stmt.setString(3, hashSha(received.getString("password") + salt));
 			stmt.setString(4, salt);
-			System.out.println("oi");
 			try{
 					stmt.setString(5, received.getString("avatar"));
 			}
@@ -145,14 +144,7 @@ public class DAO {
 				e.printStackTrace();
 				stmt.setString(5, "https://i.imgur.com/qbjmIEA.png");
 			}
-			//System.out.println(received.getString("avatar"));
-			//if (received.getString("avatar") != null){
-			//	stmt.setString(5, received.getString("avatar"));
-			//}
-			//else{
-			//	stmt.setString(5, "NULL");
-			//}
-			
+	
 			stmt.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -197,7 +189,7 @@ public class DAO {
 			stmt.setString(8, note.getString("lastUser"));
 			stmt.execute();
 			PreparedStatement querystmt = this.connection.prepareStatement(
-				String.format("SELECT * FROM Notes JOIN Users on Users.id = Notes.user_id where user_id=%s order by notes.id desc limit 1",note.getInt("userId"))
+				String.format("SELECT * FROM Notes JOIN Users on Users.id = Notes.user_id where user_id=%s order by Notes.id desc limit 1",note.getInt("userId"))
 			);
 			ResultSet rs = querystmt.executeQuery();
 			if (rs.first()){
@@ -205,7 +197,7 @@ public class DAO {
 				result.put("note",new Note(
 						rs.getInt("id"),rs.getInt("user_id"),rs.getTimestamp("created_at"),
 						rs.getTimestamp("updated_at"),rs.getString("content"),rs.getString("color"),
-						rs.getBoolean("private"), rs.getBoolean("concluded"),rs.getString("commentary"), rs.getString("username"),rs.getString("title"),rs.getString("last_user")));
+						rs.getBoolean("private"), rs.getBoolean("concluded"),rs.getString("commentary"), rs.getString("username"),rs.getString("title"),rs.getString("last_user"), rs.getString("avatar")));
 				callback.Callback(result);
 			}
 		} catch (SQLException e) {
@@ -227,7 +219,7 @@ public class DAO {
 		try {
 			while(rs.next()){
 				notes.add(new Note(rs.getInt("id"),rs.getInt("user_id"),rs.getTimestamp("created_at"),rs.getTimestamp("updated_at"),
-						rs.getString("content"),rs.getString("color"),rs.getBoolean("private"), rs.getBoolean("concluded"), rs.getString("commentary"), rs.getString("username"),rs.getString("title"),rs.getString("last_user")));
+						rs.getString("content"),rs.getString("color"),rs.getBoolean("private"), rs.getBoolean("concluded"), rs.getString("commentary"), rs.getString("username"),rs.getString("title"),rs.getString("last_user"), rs.getString("avatar")));
 			}
 //			notes.forEach((note)-> System.out.print(note.getTitle()));
 			result.put("notes", notes);
