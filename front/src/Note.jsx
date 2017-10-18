@@ -9,6 +9,7 @@ import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import moment from 'moment'
 import ReactMarkdown from'react-markdown';
+import YouTube from 'react-youtube';
 
 const debounce = require('lodash/debounce');
 const omit = require('lodash/omit')
@@ -21,6 +22,7 @@ class Note extends Component {
             open: false,
             anchorEl: null,
             showEditableContent: false,
+            youtubeArray: []
         }
 
         this.exists = true
@@ -29,6 +31,22 @@ class Note extends Component {
 
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps.info)
+    }
+
+    parseYoutubeIds(){
+        
+        
+        let patt = new RegExp('(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})')
+
+        let findId = patt.exec(this.state.content)
+
+        console.log(findId,this.state)
+
+        if(findId != null){
+            let newYoutubeArray = this.state.youtubeArray
+            newYoutubeArray.push(findId[1])
+            this.setState({youtubeArray : newYoutubeArray})
+        }
     }
 
     handleOptionsOpen = (event) => {
@@ -141,6 +159,7 @@ class Note extends Component {
                                 <ReactMarkdown source={this.state.content} />
                             </div>
                         }
+                        {this.state.youtubeArray.map((url) => <YouTube videoId={url} opts={opts}/>)}
 
 
 
