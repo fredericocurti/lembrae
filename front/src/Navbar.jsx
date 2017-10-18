@@ -131,7 +131,11 @@ class Navbar extends Component {
                     <FlatButton style={{height:'auto',lineHeight:'none'}}
                         onTouchTap={this.handleTouchTap}
                         hoverColor={ 'rgba(130,130,130,0.1)' }>
-                        <Avatar src={this.state.photoURL} className='userImg' />
+                        <Avatar
+                        src={ auth.getUser().avatar }
+                        size={30}
+                        className='user-avatar'
+                        />
                         <Popover
                             open={this.state.open}
                             anchorEl={this.state.anchorEl}
