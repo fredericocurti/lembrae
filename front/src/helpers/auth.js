@@ -6,13 +6,16 @@ import {EventEmitter} from 'events'
 const emitter = new EventEmitter();
 emitter.setMaxListeners(20)
 
+
 const baseUrl = 'http://localhost:8080/root/'
 
-var user = { 
-    id : null ,
-    email : null,
-    username : null,
-    password : null
+
+
+var user = {
+  id: null,
+  email: null,
+  username: null,
+  password: null
 }
 
 export default window.auth = {

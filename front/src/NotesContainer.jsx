@@ -25,8 +25,9 @@ class NotesContainer extends Component {
             inputColor: '#ffffff',
             private: false,
             concluded: false,
-            title : '',
             commentary : '{ "commentary" : []}',
+            lastUser: '',
+            title : '',
             imageIsLoading : false,
             images : {},
             filter : this.props.filter
@@ -103,7 +104,7 @@ class NotesContainer extends Component {
                 })
             }
             store.addNote(new store.Note (
-                this.state.title,input,this.state.inputColor,this.state.private,this.state.concluded, this.state.commentary
+                this.state.title,input,this.state.inputColor,this.state.private,this.state.concluded, this.state.commentary, this.state.lastUser 
             ))
             this.setState({inputText : '', errorText: '', title: '', images : {}})
         } else {

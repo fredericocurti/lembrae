@@ -10,6 +10,7 @@ import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import moment from 'moment'
+import ReactMarkdown from'react-markdown';
 
 const debounce = require('lodash/debounce');
 const omit = require('lodash/omit')
@@ -51,7 +52,9 @@ class Note extends Component {
         e.preventDefault()
         if (this.state[e.currentTarget.id] != e.target.value) {
             this.setState({ [e.currentTarget.id]: e.target.value });
+            this.setState({lastUser: auth.getUser().username})
             this.delayedUpdate()
+            
         }
     }
 
@@ -105,6 +108,7 @@ class Note extends Component {
             this.props.update(updatedState)
         }
     }
+
 
     handleRemove = () => {
         this.exists = false
@@ -161,7 +165,7 @@ class Note extends Component {
         } else {
             var checked = '';
         }
-
+        console.log(this.state.commentary)
         var obj = JSON.parse(this.state.commentary);
         var commentary = obj.commentary;
 
@@ -176,7 +180,7 @@ class Note extends Component {
                             <ContentEditable
                                 id="title"
                                 html={this.state.title}
-                                disabled={auth.getUser().id === this.state.userId ? false : true}
+                                disabled={this.state.isPrivate}
                                 onChange={this.handleChange}
                             />
                             <IconButton onClick={this.handleOptionsOpen}>
@@ -185,19 +189,28 @@ class Note extends Component {
                             {popOver()}
                         </div>
 
-                        <ContentEditable
-                            id="content"
-                            html={this.state.content}
-                            disabled={ auth.getUser().id === this.state.userId ? false : true }
-                            onChange={this.handleChange}
-                            className='note-content'
-                        />
+                        {this.state.showEditableContent ?
+                            <ContentEditable
+                                id="content"
+                                html={this.state.content}
+                                disabled={this.state.isPrivate}
+                                onChange={this.handleChange}
+                                className='note-content'
+                            />
+                            :
+                            <div onClick={() => this.setState({ showEditableContent: true })}>
+                                <ReactMarkdown source={this.state.content} />
+                            </div>
+                        }
+
+
+
 
                         <div className='divider' />
                         <div className='card-footer'>
                             {moment(this.state.updatedAt).isSame(moment(this.state.createdAt))
                                 ? <span> Criado por <b>{this.state.ownerUsername} </b> {moment(this.state.createdAt).fromNow()} </span>
-                                : <span> Atualizado por <b>{this.state.ownerUsername}</b> {moment(this.state.updatedAt).fromNow()} </span>
+                                : <span> Atualizado por <b>{this.state.lastUser}</b> {moment(this.state.updatedAt).fromNow()} </span>
                             }
                             <div style={{ textAlign: 'right' }}>
                             </div>
