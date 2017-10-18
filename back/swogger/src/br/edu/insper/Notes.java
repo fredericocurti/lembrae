@@ -43,12 +43,14 @@ public class Notes extends HttpServlet {
 					JSONArray res = new JSONArray();
 					for (int i=0; i<resultList.size(); i++) {
 						JSONObject test = new JSONObject();
+						test.put("commentary", resultList.get(i).getCommentary());
 						test.put("lastUser", resultList.get(i).getlastUser());
 						test.put("createdAt", resultList.get(i).getCreatedAt());
 						test.put("color", resultList.get(i).getColor());
 						test.put("ownerUsername", resultList.get(i).getOwnerUsername());
 						test.put("id", resultList.get(i).getId());
 						test.put("isPrivate", resultList.get(i).getIsPrivate());
+						test.put("isConcluded", resultList.get(i).getIsConcluded());
 						test.put("title", resultList.get(i).getTitle());
 						test.put("userId", resultList.get(i).getUserId());
 						test.put("content", resultList.get(i).getContent());

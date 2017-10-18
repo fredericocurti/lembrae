@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * Servlet implementation class Login

@@ -16,31 +16,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.io.UnsupportedEncodingException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class DAO {
-	private Connection connection = null;
-
+	private Connection connection = null;  
 	public DAO() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e1) {
 			System.out.println("failed to setup driver");
 			e1.printStackTrace();
-		}
+		} 
 		try {
-			this.connection = DriverManager.getConnection("jdbc:mysql://localhost/notesdb", "root", "1111");
+			this.connection = DriverManager.getConnection("jdbc:mysql://localhost/notesdb", "root", "674074");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
 	private String getSalt() { // gera um salt aleatorio
         String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
         StringBuilder salt = new StringBuilder();
@@ -80,20 +78,20 @@ public class DAO {
 		}
 		return "a casa caiu";
 	}
-
-	private ResultSet query(String sqlquery) {
+	
+	private ResultSet query(String sqlquery){
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		try {
-			stmt = connection.prepareStatement(sqlquery);
-			rs = stmt.executeQuery();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+				stmt = connection.prepareStatement(sqlquery);
+				rs = stmt.executeQuery();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		return rs;
 	}
-
+	
 	public void auth(String email, String password, Callback callback) {
 		ResultSet rs = this.query(String.format("SELECT * FROM Users WHERE email='%s';", email));
 		Users user = null;
@@ -184,28 +182,30 @@ public class DAO {
 			e.getErrorCode();
 		}
 	}
-
-	public void addNote(JSONObject note, Callback callback) {
+	
+	public void addNote(JSONObject note,Callback callback){
 		try {
-			PreparedStatement stmt = this.connection
-					.prepareStatement("INSERT INTO Notes(user_id,content,color,private,title,last_user) VALUES(?,?,?,?,?,?);");
-			stmt.setInt(1, note.getInt("userId"));
+			PreparedStatement stmt = this.connection.prepareStatement(
+					"INSERT INTO Notes(user_id,content,color,private, concluded, commentary, title, last_user) VALUES(?,?,?,?,?,?,?,?);");
+			stmt.setInt(1,note.getInt("userId"));
 			stmt.setString(2, note.getString("content"));
 			stmt.setString(3, note.getString("color"));
 			stmt.setBoolean(4, note.getBoolean("isPrivate"));
-			stmt.setString(5, note.getString("title"));
-			stmt.setString(6, note.getString("lastUser"));
+			stmt.setBoolean(5, note.getBoolean("isConcluded"));
+			stmt.setString(6, note.getString("commentary"));
+			stmt.setString(7, note.getString("title"));
+			stmt.setString(8, note.getString("lastUser"));
 			stmt.execute();
-			PreparedStatement querystmt = this.connection.prepareStatement(String.format(
-					"SELECT * FROM Notes JOIN Users on Users.ID = Notes.user_id where user_id=%s order by Notes.id desc limit 1",
-					note.getInt("userId")));
+			PreparedStatement querystmt = this.connection.prepareStatement(
+				String.format("SELECT * FROM Notes JOIN Users on Users.id = Notes.user_id where user_id=%s order by notes.id desc limit 1",note.getInt("userId"))
+			);
 			ResultSet rs = querystmt.executeQuery();
-			if (rs.first()) {
-				Map<String, Object> result = new HashMap<String, Object>();
-				result.put("note",
-						new Note(rs.getInt("id"), rs.getInt("user_id"), rs.getTimestamp("created_at"),
-								rs.getTimestamp("updated_at"), rs.getString("content"), rs.getString("color"),
-								rs.getBoolean("private"), rs.getString("username"), rs.getString("title"),rs.getString("last_user")));
+			if (rs.first()){
+				Map<String,Object> result = new HashMap<String,Object>();
+				result.put("note",new Note(
+						rs.getInt("id"),rs.getInt("user_id"),rs.getTimestamp("created_at"),
+						rs.getTimestamp("updated_at"),rs.getString("content"),rs.getString("color"),
+						rs.getBoolean("private"), rs.getBoolean("concluded"),rs.getString("commentary"), rs.getString("username"),rs.getString("title"),rs.getString("last_user")));
 				callback.Callback(result);
 			}
 		} catch (SQLException e) {
@@ -213,58 +213,58 @@ public class DAO {
 			e.printStackTrace();
 		}
 	}
-
-	public void getNotes(Integer uid, String requested, Callback callback) {
+	
+	public void getNotes(Integer uid,String requested,Callback callback) {
 		List<Note> notes = new ArrayList<Note>();
 		ResultSet rs = null;
-		Map<String, Object> result = new HashMap<String, Object>();
-		if (Objects.equals(requested, "PUBLIC_NOTES")) {
-			rs = this.query(String.format(
-					"SELECT * FROM Notes JOIN Users ON Users.id = Notes.user_id WHERE (user_id='%s' and private=1) or private=0;",
-					uid));
+		Map<String,Object> result = new HashMap<String,Object>();
+		if (Objects.equals(requested, "PUBLIC_NOTES")){
+			rs = this.query (
+				String.format("SELECT * FROM Notes JOIN Users ON Users.id = Notes.user_id WHERE (user_id='%s' and private=1) or private=0;", uid)
+			);
 		}
-
+		
 		try {
-			while (rs.next()) {
-				notes.add(new Note(rs.getInt("id"), rs.getInt("user_id"), rs.getTimestamp("created_at"),
-						rs.getTimestamp("updated_at"), rs.getString("content"), rs.getString("color"),
-						rs.getBoolean("private"), rs.getString("username"), rs.getString("title"),rs.getString("last_user")));
-				System.out.println(rs.getString("last_user"));
-				
+			while(rs.next()){
+				notes.add(new Note(rs.getInt("id"),rs.getInt("user_id"),rs.getTimestamp("created_at"),rs.getTimestamp("updated_at"),
+						rs.getString("content"),rs.getString("color"),rs.getBoolean("private"), rs.getBoolean("concluded"), rs.getString("commentary"), rs.getString("username"),rs.getString("title"),rs.getString("last_user")));
 			}
-			// notes.forEach((note)-> System.out.print(note.getTitle()));
+//			notes.forEach((note)-> System.out.print(note.getTitle()));
 			result.put("notes", notes);
-			System.out.println(notes.get(0).getlastUser());
+			System.out.println(notes);
 			callback.Callback(result);
 			rs.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
-
-	// public void removeNote(Integer uid) {
-	// try {
-	// PreparedStatement stmt = connection.prepareStatement(
-	// "UPDATE Notes SET content=?,color=?,private=?, title=? WHERE id=?"
-	// );
-	// } catch (SQLException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	// }
-
+	
+//	public void removeNote(Integer uid) {
+//		try {
+//			PreparedStatement stmt = connection.prepareStatement(
+//					"UPDATE Notes SET content=?,color=?,private=?, title=? WHERE id=?"
+//					);
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+	
 	public void update(JSONObject received, Callback callback) {
-		Map<String, Object> result = new HashMap<String, Object>();
+		Map<String,Object> result = new HashMap<String,Object>();
 		try {
-			PreparedStatement stmt = connection
-					.prepareStatement("UPDATE Notes SET content=?,color=?,private=?, title=?, last_user=? WHERE id=?");
+			PreparedStatement stmt = connection.prepareStatement(
+					"UPDATE Notes SET content=?,color=?,private=?, concluded=?, commentary=?, title=?, last_user=? WHERE id=?"
+					);
 			stmt.setString(1, received.getString("content"));
 			stmt.setString(2, received.getString("color"));
 			stmt.setBoolean(3, received.getBoolean("isPrivate"));
-			stmt.setString(4, received.getString("title"));
-			stmt.setString(5, received.getString("lastUser"));
-			stmt.setInt(6, received.getInt("id"));
+			stmt.setBoolean(4, received.getBoolean("isConcluded"));
+			stmt.setString(5, received.getString("commentary"));
+			stmt.setString(6, received.getString("title"));
+			stmt.setString(7, received.getString("lastUser"));
+			stmt.setInt(8, received.getInt("id"));
 			stmt.execute();
 			stmt.close();
 			result.put("status", "SUCCESS");
@@ -276,23 +276,22 @@ public class DAO {
 			callback.Callback(result);
 		}
 	}
-
-	// public void registra(Users user) {
-	// String sql = "UPDATE Pessoas SET " + "nome=?, nascimento=?, altura=?
-	// WHERE id=?";
-	// PreparedStatement stmt;
-	// try {
-	// stmt = connection.prepareStatement(sql);
-	// stmt.setString(1, pessoa.getNome());
-	// stmt.execute();
-	// stmt.close();
-	// } catch (SQLException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	// }
-
-	public void close() {
+	
+//	public void registra(Users user) {
+//		String sql = "UPDATE Pessoas SET " + "nome=?, nascimento=?, altura=? WHERE id=?";
+//		PreparedStatement stmt;
+//		try {
+//			stmt = connection.prepareStatement(sql);
+//			stmt.setString(1, pessoa.getNome());
+//			stmt.execute(); 
+//			stmt.close(); 
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+	
+	public void close() { 
 		try {
 			connection.close();
 		} catch (Exception e) {
@@ -300,31 +299,33 @@ public class DAO {
 		}
 	}
 
-	public void adiciona(Pessoas pessoa) {
-		String sql = "INSERT INTO Pessoas" + "(nome,nascimento,altura) values(?,?,?)";
-		try {
-			PreparedStatement stmt = connection.prepareStatement(sql);
-			stmt.setString(1, pessoa.getNome());
-			stmt.setDate(2, new Date(pessoa.getNascimento().getTimeInMillis()));
-			stmt.setDouble(3, pessoa.getAltura());
-			stmt.execute();
-			stmt.close();
-		} catch (SQLException e) {
+	public void adiciona(Pessoas pessoa) { 
+		String sql = "INSERT INTO Pessoas" +  "(nome,nascimento,altura) values(?,?,?)";
+		try{
+			PreparedStatement stmt = connection.prepareStatement(sql);  
+			stmt.setString(1,pessoa.getNome()); 
+			stmt.setDate(2, new Date(pessoa.getNascimento().getTimeInMillis()));  
+			stmt.setDouble(3,pessoa.getAltura());  
+			stmt.execute(); 
+			stmt.close();			
+		} catch (SQLException e){
 			e.printStackTrace();
 		}
 	}
-
+	
 	public void remove(Integer id) {
 		PreparedStatement stmt;
 		try {
 			stmt = connection.prepareStatement("DELETE FROM Notes WHERE id=?");
 			stmt.setInt(1, id);
-			stmt.execute();
-			stmt.close();
+			stmt.execute(); 
+			stmt.close(); 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} 
 	}
+	
 
+	
 }

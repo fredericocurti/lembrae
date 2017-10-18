@@ -24,6 +24,11 @@ class NotesContainer extends Component {
             errorText: null,
             inputColor: '#ffffff',
             private: false,
+<<<<<<< HEAD
+=======
+            concluded: false,
+            commentary : '{ "commentary" : []}',
+>>>>>>> comentarios
             lastUser: '',
             title : '',
             imageIsLoading : false,
@@ -102,7 +107,7 @@ class NotesContainer extends Component {
                 })
             }
             store.addNote(new store.Note (
-                this.state.title,input,this.state.inputColor,this.state.private,this.state.lastUser
+                this.state.title,input,this.state.inputColor,this.state.private,this.state.concluded, this.state.commentary, this.state.lastUser 
             ))
             this.setState({inputText : '', errorText: '', title: '', images : {}})
         } else {
@@ -165,6 +170,10 @@ class NotesContainer extends Component {
             } else if (filter == 'mine'){
                 return _.filter(_.values(this.state.data).reverse(), (o) => {
                     return o.userId == this.user.id
+                })
+            } else if (filter == 'concluded'){
+                return _.filter(_.values(this.state.data).reverse(), (o) => {
+                    return o.isConcluded !== false
                 })
             }
         }

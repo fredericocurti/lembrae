@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+import {List, ListItem} from 'material-ui/List';
 import ContentEditable from "react-contenteditable";
+import TextField from 'material-ui/TextField'
 import auth from './helpers/auth.js'
 import _ from 'lodash'
 import FontIcon from 'material-ui/FontIcon';
@@ -22,6 +24,8 @@ class Note extends Component {
             open: false,
             anchorEl: null,
             showEditableContent: false,
+            showComments: false,
+            typedCommentary: '',
             youtubeArray: []
         }
 
@@ -78,10 +82,48 @@ class Note extends Component {
         this.delayedUpdate()
     }
 
+    handleConclusion = () => {
+        this.setState({ isConcluded: !this.state.isConcluded })
+        this.delayedUpdate()
+    }
+
+    handleShowComments = () => {
+        this.setState({ showComments: !this.state.showComments })
+    }
+
+    handleCommentaryChange = (event) => {
+        this.setState({
+            typedCommentary : event.target.value,
+        });
+    };
+
+    handleCommentaryClick = (index) => {
+        var jsonstr = this.state.commentary
+        var obj = JSON.parse(jsonstr)
+        obj.commentary.splice(index, 1)
+        jsonstr = JSON.stringify(obj)
+        this.setState({ 
+            commentary : jsonstr,
+        })
+        this.delayedUpdate()
+    };
+
+    handleCommentarySubmit = (event) => {
+        var jsonstr = this.state.commentary
+        var obj = JSON.parse(jsonstr)
+        obj["commentary"].push({"content":this.state.typedCommentary,"user":auth.getUser().username})
+        jsonstr = JSON.stringify(obj)
+        this.setState({ 
+            commentary : jsonstr,
+            typedCommentary : ''
+        })
+        this.delayedUpdate()
+    }
+
+
     update = () => {
         if (this.exists) {
-            this.setState({ showEditableContent: false })
-            let updatedState = omit(this.state, ['open', 'anchorEl'])
+            let updatedState = omit(this.state,['open','anchorEl'])
             this.props.update(updatedState)
         }
     }
@@ -103,10 +145,12 @@ class Note extends Component {
                     onRequestClose={this.handleOptionsClose}
                 >
                     <Menu>
+                    {auth.getUser().id === this.state.userId ?
+                        <div>
                         <MenuItem
-                            leftIcon={<FontIcon className="material-icons" > delete_forever </FontIcon>}
-                            primaryText="Remover nota"
-                            onClick={this.handleRemove} />
+                        leftIcon={<FontIcon className="material-icons" > delete_forever </FontIcon>}
+                        primaryText="Remover nota"
+                        onClick={this.handleRemove} />
 
                         <MenuItem
                             onClick={this.handleLockPress}
@@ -115,13 +159,35 @@ class Note extends Component {
                                     {this.state.isPrivate ? 'lock' : 'lock_open'}
                                 </FontIcon>
                             }
-                            primaryText={this.state.isPrivate ? "Tornar pública" : "Tornar privada"}
-                        />
+                            primaryText={this.state.isPrivate ? "Tornar pública" : "Tornar privada"} />
 
+                        <MenuItem
+                            leftIcon={<FontIcon className="material-icons" > check </FontIcon>}
+                            primaryText={this.state.isConcluded ? "Resumir Nota" : "Concluir Nota"}
+                            onClick={this.handleConclusion} />
+                        </div>
+                        : null
+                    }
+                    {this.state.isPrivate ? null :
+                        <MenuItem
+                            leftIcon={<FontIcon className="material-icons" > commentary </FontIcon>}
+                            primaryText={this.state.showComments ? "Esconder Comentários" : "Mostrar Comentários"}
+                            onClick={this.handleShowComments} />
+                    }
                     </Menu>
                 </Popover>
             )
         }
+
+        if (this.state.isConcluded === true) {
+            var checked = <FontIcon className="material-icons" color="green" > check </FontIcon>;
+        } else {
+            var checked = '';
+        }
+        console.log(this.state.commentary)
+        var obj = JSON.parse(this.state.commentary);
+        var commentary = obj.commentary;
+
         return (
             <div className='grid-item col s6 m4 l3'>
                 <div className='card multiline'
@@ -129,20 +195,16 @@ class Note extends Component {
                 >
                     <div className='card-content'>
                         <div className="card-title">
+                            {checked}
                             <ContentEditable
                                 id="title"
                                 html={this.state.title}
                                 disabled={this.state.isPrivate}
                                 onChange={this.handleChange}
-                                style={{ wordWrap: 'break-word' }}
                             />
-                            {auth.getUser().id === this.state.userId
-                                ?
-                                <IconButton onClick={this.handleOptionsOpen}>
-                                    <FontIcon className="material-icons" > more_vert </FontIcon>
-                                </IconButton>
-                                : null
-                            }
+                            <IconButton onClick={this.handleOptionsOpen}>
+                                <FontIcon className="material-icons" > more_vert </FontIcon>
+                            </IconButton>
                             {popOver()}
                         </div>
 
@@ -173,6 +235,25 @@ class Note extends Component {
                             <div style={{ textAlign: 'right' }}>
                             </div>
                         </div>
+                        {this.state.showComments ? <div className='divider' /> : null }
+                        {this.state.showComments ?
+                        <List>
+                            {commentary.map((comment, index) => 
+                            <ListItem key={'list-'+index} primaryText={comment.user} secondaryText={comment.content} onClick={this.handleCommentaryClick.bind(this, index)} />)}
+                            <TextField
+                                id="text-field-controlled"
+                                value={this.state.typedCommentary}
+                                onChange={this.handleCommentaryChange}
+                                className='note-input-commentary' //fazer no css
+                                hintText='Insira um comentário...'
+                                underlineStyle={{width:95+'%',color:'#808080'}}
+                                underlineFocusStyle={{width:95+'%',borderColor:'#808080'}}
+                            />
+                            <IconButton style={{position: "absolute", bottom: 0, right: 0}} onClick={this.handleCommentarySubmit}>
+                                <FontIcon className="material-icons" >add</FontIcon>
+                            </IconButton>
+                        </List> : null }
+
                     </div>
                 </div>
             </div>
