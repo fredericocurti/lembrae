@@ -33,6 +33,7 @@ public class Notes extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		System.out.println("GET Request received");
 		// Request
+		response.setCharacterEncoding("utf-8");
 		String notesQuery = request.getParameter("q");
 		Integer uid = Integer.decode(request.getParameter("uid"));
 		System.out.print("User " + request.getParameter("user") + " Requested " + notesQuery);
@@ -91,6 +92,7 @@ public class Notes extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		System.out.println("POST Request received - Add note");
 		// Request
+		response.setCharacterEncoding("utf-8");
 		String test = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
 		JSONObject obj = new JSONObject(test);
 		JSONObject payload = obj.getJSONObject("payload");

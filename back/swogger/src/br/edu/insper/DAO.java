@@ -34,7 +34,7 @@ public class DAO {
 			e1.printStackTrace();
 		}
 		try {
-			this.connection = DriverManager.getConnection("jdbc:mysql://localhost/notesdb", "root", "1111");
+			this.connection = DriverManager.getConnection("jdbc:mysql://localhost/fred", "root", "Mariluca01!");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -234,7 +234,7 @@ public class DAO {
 			}
 			// notes.forEach((note)-> System.out.print(note.getTitle()));
 			result.put("notes", notes);
-			System.out.println(notes.get(0).getlastUser());
+			//System.out.println(notes.get(0).getlastUser());
 			callback.Callback(result);
 			rs.close();
 		} catch (SQLException e) {

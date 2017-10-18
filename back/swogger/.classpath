@@ -9,7 +9,8 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/Users/gmore/Downloads/apache-tomcat-9.0.1/lib/servlet-api.jar"/>
-	<classpathentry kind="lib" path="/Users/gmore/Downloads/mysql-connector-java-5.1.44/mysql-connector-java-5.1.44-bin.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Apache Software Foundation/Tomcat 9.0/lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jean Luca/Documents/GitHub/lembrae/JavaLibs/mysql-connector-java-5.1.44-bin.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jean Luca/Documents/GitHub/lembrae/JavaLibs/java-json.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
