@@ -139,7 +139,7 @@ public class DAO {
 			stmt.setString(2, received.getString("username"));
 			stmt.setString(3, hashSha(received.getString("password") + salt));
 			stmt.setString(4, salt);
-			System.out.println("oi");
+	
 			try{
 				stmt.setString(5, received.getString("avatar"));
 			}
@@ -204,7 +204,7 @@ public class DAO {
 				result.put("note",
 						new Note(rs.getInt("id"), rs.getInt("user_id"), rs.getTimestamp("created_at"),
 								rs.getTimestamp("updated_at"), rs.getString("content"), rs.getString("color"),
-								rs.getBoolean("private"), rs.getString("username"), rs.getString("title")));
+								rs.getBoolean("private"), rs.getString("username"), rs.getString("title"),rs.getString("avatar")));
 				callback.Callback(result);
 			}
 		} catch (SQLException e) {
@@ -227,7 +227,7 @@ public class DAO {
 			while (rs.next()) {
 				notes.add(new Note(rs.getInt("id"), rs.getInt("user_id"), rs.getTimestamp("created_at"),
 						rs.getTimestamp("updated_at"), rs.getString("content"), rs.getString("color"),
-						rs.getBoolean("private"), rs.getString("username"), rs.getString("title")));
+						rs.getBoolean("private"), rs.getString("username"), rs.getString("title"), rs.getString("avatar")));
 			}
 			// notes.forEach((note)-> System.out.print(note.getTitle()));
 			result.put("notes", notes);

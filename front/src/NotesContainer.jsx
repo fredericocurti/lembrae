@@ -217,7 +217,8 @@ class NotesContainer extends Component {
                         </div>
                         
                         <div className='note-input-options'>    
-                            <input id="photoInput" 
+                            <input 
+                                id="photoInput" 
                                 type="file" 
                                 ref={(ref) => this.photoInput = ref } 
                                 style={{display:'none'}}

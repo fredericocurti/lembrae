@@ -9,7 +9,7 @@ import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import moment from 'moment'
 import ReactMarkdown from'react-markdown';
-
+import Avatar from 'material-ui/Avatar'
 const debounce = require('lodash/debounce');
 const omit = require('lodash/omit')
 
@@ -146,9 +146,16 @@ class Note extends Component {
                         <div className='divider' />
                         <div className='card-footer'>
                             {moment(this.state.updatedAt).isSame(moment(this.state.createdAt))
-                                ? <span> Criado por <b>{this.state.ownerUsername} </b> {moment(this.state.createdAt).fromNow()} </span>
+                                ? <span> Criado por <b>{this.state.ownerUsername} </b> 
+                                <Avatar
+                                src={ this.state.ownerAvatar}
+                                size={30}
+                                className='user-avatar'
+                                />
+                            {moment(this.state.createdAt).fromNow()} </span>
                                 : <span> Atualizado por <b>{this.state.ownerUsername}</b> {moment(this.state.updatedAt).fromNow()} </span>
                             }
+                            
                             <div style={{ textAlign: 'right' }}>
                             </div>
                         </div>

@@ -120,7 +120,7 @@ export default window.store = {
       content: content,
       isPrivate: isPrivate,
       userId: auth.getUser().id,
-      title: title
+      title: title,
     }
   }
 
