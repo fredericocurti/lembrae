@@ -184,7 +184,15 @@ class Note extends Component {
         } else {
             var checked = '';
         }
-        console.log(this.state.commentary)
+        
+        const opts = {
+            height: '200',
+            width: '200',
+            playerVars: { // https://developers.google.com/youtube/player_parameters
+              autoplay: 0
+            }
+        }
+
         var obj = JSON.parse(this.state.commentary);
         var commentary = obj.commentary;
 
