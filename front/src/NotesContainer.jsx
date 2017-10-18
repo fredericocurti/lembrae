@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Document } from 'react-pdf';
 import Masonry from 'react-masonry-component'
 import TextField from 'material-ui/TextField'
 import Note from './Note'
@@ -24,7 +25,6 @@ class NotesContainer extends Component {
             errorText: null,
             inputColor: '#ffffff',
             private: false,
-            lastUser: '',
             title : '',
             imageIsLoading : false,
             images : {},
@@ -102,7 +102,7 @@ class NotesContainer extends Component {
                 })
             }
             store.addNote(new store.Note (
-                this.state.title,input,this.state.inputColor,this.state.private,this.state.lastUser
+                this.state.title,input,this.state.inputColor,this.state.private
             ))
             this.setState({inputText : '', errorText: '', title: '', images : {}})
         } else {
@@ -117,7 +117,7 @@ class NotesContainer extends Component {
     addPicture = (e) => {
         let file = e.path[0].files[0]
         if (file) {
-            if (file.size > 2000000) {
+            if (file.size > 20000000) {
                 this.setState({ errorText : "Imagem muito pesada, o tamanho máximo é 2MB" })
             } else {
                 this.setState({ errorText : "", imageIsLoading : true })
@@ -166,6 +166,12 @@ class NotesContainer extends Component {
                 return _.filter(_.values(this.state.data).reverse(), (o) => {
                     return o.userId == this.user.id
                 })
+            } else if (filter == 'others'){
+                return _.filter(_.values(this.state.data).reverse(), (o) => {
+                    //var name = document.getElementById("search").value;
+                    //debug.log(name + "   ---   " + name.indexOf(o.ownerUsername) !== -1)
+                    return o.ownerUsername.indexOf(document.getElementById("search").value) !== -1; 
+                })
             }
         }
 
@@ -210,6 +216,7 @@ class NotesContainer extends Component {
                             underlineStyle={{width:100+'%',color:'#808080'}}
                             underlineFocusStyle={{width:100+'%',borderColor:'#808080'}}
                         />
+
 
                         <div className='row center canvas-container'>
                             { this.state.imageIsLoading ? <CircularProgress style={{ margin : 20 }}/> : null }
