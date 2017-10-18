@@ -6,7 +6,7 @@ import {EventEmitter} from 'events'
 // This file handles data manipulation
 
 let locale = require('moment/locale/pt-br');
-const baseUrl = 'http://localhost:8080/'
+const baseUrl = 'http://localhost:8080/root/'
 const emitter = new EventEmitter();
 emitter.setMaxListeners(20)
 

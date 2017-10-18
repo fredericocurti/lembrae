@@ -89,6 +89,7 @@ class Note extends Component {
                                 <FontIcon className="material-icons" > 
                                     {this.state.isPrivate ? 'lock' : 'lock_open'} 
                                 </FontIcon>
+                                
                             }
                             primaryText={this.state.isPrivate ? "Tornar pública" : "Tornar privada"}
                         />

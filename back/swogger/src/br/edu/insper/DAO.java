@@ -31,7 +31,7 @@ public class DAO {
 		} 
 		try {
 			this.connection = DriverManager.getConnection(
-					"jdbc:mysql://localhost/notesdb", "root", "1170");
+					"jdbc:mysql://localhost/fred", "root", "qwe(123)");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

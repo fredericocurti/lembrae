@@ -8,7 +8,9 @@ import FlatButton from 'material-ui/FlatButton';
 import Divider from 'material-ui/Divider';
 import Drawer from 'material-ui/Drawer';
 import FontIcon from 'material-ui/FontIcon';
-import IconButton from 'material-ui/IconButton'
+import IconButton from 'material-ui/IconButton' 
+import TextField from 'material-ui/TextField'
+import ActionHome from 'material-ui/svg-icons/action/home';
 
 import logo from './logo.png';
 import auth from './helpers/auth.js'
@@ -84,8 +86,35 @@ class Navbar extends Component {
                         </li>
                         </ul>
 
+
+
                         <ul className="right">
-                            <li>
+
+                                <IconButton
+                                  iconClassName="material-icons"
+                                  tooltip="Search"
+
+                                >
+                                  search
+                                    <Popover
+                                        open={this.state.open}
+                                        anchorEl={this.state.anchorEl}
+                                        anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+                                        targetOrigin={{horizontal: 'middle', vertical: 'top'}}
+                                        onRequestClose={this.handleRequestClose}
+                                    >
+                                        <Menu>
+                                            <MenuItem 
+                                                disabled 
+                                                primaryText={ <div style={{fontSize: 14}}>{this.state.user.email}</div> }/>
+                                            <Divider/>
+                                            <MenuItem primaryText="Ajuda &amp; feedback" />
+                                            <MenuItem primaryText="Configurações" />
+                                            <MenuItem primaryText="Sair" onClick={auth.logout}/>
+                                        </Menu>
+                                    </Popover>  
+                                </IconButton>
+
                                 <IconButton onClick={this.handleLockPress}>
                                     <FontIcon className="material-icons" > refresh </FontIcon>
                                 </IconButton>
@@ -93,8 +122,9 @@ class Navbar extends Component {
                                     onTouchTap={this.handleTouchTap}
                                     style={{ color: 'white' }}
                                     hoverColor={ 'rgba(130,130,130,0.5)' }
-                                    label={this.state.user.username}
+                                    label={this.state.user.username}                                    
                                 >
+
                                     <Popover
                                         open={this.state.open}
                                         anchorEl={this.state.anchorEl}
@@ -113,11 +143,11 @@ class Navbar extends Component {
                                         </Menu>
                                     </Popover>                            
                                 </FlatButton>
-                            </li>
                         </ul>
                     </div>
                 </nav>
             </div>
+
 
             {/*  SIDEBAR  */}
 
@@ -178,6 +208,21 @@ class Navbar extends Component {
                     primaryText='Minhas notas'
                     onClick={() => { this.props.setFilter('mine') }}
                 />
+
+                <TextField style={{marginTop:20}}
+
+                    id="search" 
+                    value={this.state.inputText}
+                    onChange={this.handleInputChange}
+                    leftIcon={<FontIcon className="material-icons">face</FontIcon>}
+                    className='note-input-text'
+                    placeholder='Filtrar por nome de usuario'
+                    onInput={() => { this.props.setFilter('others') }} 
+                    placeholderStyle={{color: "rgba(0,0,0,.77)",zIndex: "0",left: "5px"}} 
+                    inputStyle={{color: "rgba(0,0,0,)",zIndex: "0",left: "5px"}} 
+                    />
+
+
 
                 {/* final da navbar */}
                 <div className='sidebar-bottom-item'>

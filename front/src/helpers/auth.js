@@ -6,7 +6,7 @@ import {EventEmitter} from 'events'
 const emitter = new EventEmitter();
 emitter.setMaxListeners(20)
 
-const baseUrl = window.location.origin+'/'
+const baseUrl = 'http://localhost:8080/root/'
 
 var user = { 
     id : null ,
