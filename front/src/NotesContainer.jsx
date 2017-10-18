@@ -24,11 +24,8 @@ class NotesContainer extends Component {
             errorText: null,
             inputColor: '#ffffff',
             private: false,
-<<<<<<< HEAD
-=======
             concluded: false,
             commentary : '{ "commentary" : []}',
->>>>>>> comentarios
             lastUser: '',
             title : '',
             imageIsLoading : false,
