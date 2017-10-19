@@ -8,7 +8,7 @@ import FlatButton from 'material-ui/FlatButton';
 import Divider from 'material-ui/Divider';
 import Drawer from 'material-ui/Drawer';
 import FontIcon from 'material-ui/FontIcon';
-import IconButton from 'material-ui/IconButton'
+import IconButton from 'material-ui/IconButton';
 
 import logo from './logo.png';
 import auth from './helpers/auth.js'
@@ -26,7 +26,7 @@ class Navbar extends Component {
             show : false
         }
     }
-    
+
     componentWillMount() {
         this.mql.addListener(this.mediaQueryChanged)
         this.setState({mql:this.mql, docked : this.mql.matches})
@@ -34,7 +34,7 @@ class Navbar extends Component {
 
     componentDidMount() {
     }
-    
+
 
     mediaQueryChanged() {
         this.setState({
@@ -47,7 +47,7 @@ class Navbar extends Component {
         this.drawer.setState( { open : !this.drawer.state.open })
         this.props.toggleDrawer()
     }
-    
+
 
     handleTouchTap = (event) => {
         this.setState({
@@ -70,7 +70,7 @@ class Navbar extends Component {
                     <div id="navbar" className="nav-wrapper sticky">
                         <ul>
                             <div className="middleimg center logo" style={{height:50}}>
-                                <img className='logo' src={logo} width={50}/> 
+                                <img className='logo' src={logo} width={50}/>
                             </div>
                         </ul>
 
@@ -103,15 +103,15 @@ class Navbar extends Component {
                                         onRequestClose={this.handleRequestClose}
                                     >
                                         <Menu>
-                                            <MenuItem 
-                                                disabled 
+                                            <MenuItem
+                                                disabled
                                                 primaryText={ <div style={{fontSize: 14}}>{this.state.user.email}</div> }/>
                                             <Divider/>
                                             <MenuItem primaryText="Ajuda &amp; feedback" />
                                             <MenuItem primaryText="Configurações" />
                                             <MenuItem primaryText="Sair" onClick={auth.logout}/>
                                         </Menu>
-                                    </Popover>                            
+                                    </Popover>
                                 </FlatButton>
                             </li>
                         </ul>
@@ -127,7 +127,7 @@ class Navbar extends Component {
                 containerClassName='drawer'
                 width={250}
                 ref={ (Drawer) => { this.drawer = Drawer } } >
-                
+
                     <FlatButton style={{height:'auto',lineHeight:'none'}}
                         onTouchTap={this.handleTouchTap}
                         hoverColor={ 'rgba(130,130,130,0.1)' }>
@@ -141,16 +141,16 @@ class Navbar extends Component {
                         >
                             <Menu>
                                 <MenuItem
-                                    disabled 
+                                    disabled
                                     primaryText={ <div style={{fontSize: 14}}>{this.state.user.email}</div> }
                                 />
-                                
+
                                 <Divider/>
                                 <MenuItem primaryText="Ajuda &amp; feedback" />
                                 <MenuItem primaryText="Configurações" />
                                 <MenuItem primaryText="Sair" onClick={auth.logout}/>
                             </Menu>
-                        </Popover>                            
+                        </Popover>
                     </FlatButton>
 
                 <MenuItem disabled
@@ -184,11 +184,11 @@ class Navbar extends Component {
                     <Divider/>
                     <MenuItem leftIcon={<FontIcon className="material-icons" >help</FontIcon>} primaryText="Ajuda &amp; feedback" />
                     <MenuItem
-                        leftIcon={<FontIcon className="material-icons" >settings</FontIcon>} 
+                        leftIcon={<FontIcon className="material-icons" >settings</FontIcon>}
                         primaryText="Configurações"
                     />
-                    <MenuItem 
-                        leftIcon={<FontIcon className="material-icons" >power_settings_new</FontIcon>} 
+                    <MenuItem
+                        leftIcon={<FontIcon className="material-icons" >power_settings_new</FontIcon>}
                         primaryText="Sair" onClick={auth.logout}
                     />
                 </div>

@@ -10,6 +10,9 @@ import CircularProgress from 'material-ui/CircularProgress';
 import _ from 'lodash'
 import store from './helpers/store.js'
 import auth from './helpers/auth.js'
+import EmojiPicker from 'emojione-picker';
+import '../node_modules/emojione-picker/css/picker.css';
+import Emojify from 'react-emojione';
 // import ImagesUploader from 'react-images-uploader';
 // import 'react-images-uploader/styles.css';
 // import 'react-images-uploader/font.css';
@@ -54,7 +57,7 @@ class NotesContainer extends Component {
     componentWillReceiveProps(nextProps) {
         this.setState({ filter : nextProps.filter })
     }
-    
+
     updateNote = (note) => {
         store.updateNote(note, (newNote) => {
             let newData = this.state.data
@@ -83,13 +86,13 @@ class NotesContainer extends Component {
         });
     };
 
-    handleTitleChange = (event) => { 
-        this.setState({ 
+    handleTitleChange = (event) => {
+        this.setState({
             title : event.target.value,
-            errorText : this.state.title.length > 40 ? "Você atingiu o tamanho máximo para o título" : null 
+            errorText : this.state.title.length > 40 ? "Você atingiu o tamanho máximo para o título" : null
         })
     }
-        
+
     handleNoteSubmit = (event) => {
         if (this.state.inputText != '' && this.state.title.length <= 40){
             let images = _.values(this.state.images)
@@ -107,7 +110,7 @@ class NotesContainer extends Component {
             this.setState({inputText : '', errorText: '', title: '', images : {}})
         } else {
             this.setState({ errorText : this.state.errorText ? '' : "Texto vazio" + ', por favor corrija' })
-        }    
+        }
     }
 
     handleLockPress = () => {
@@ -127,12 +130,12 @@ class NotesContainer extends Component {
                     newImages[result.data.id] =
                         <div key={result.data.id} image={result.data} className='hover-container'>
                             <img className='note-input-img'  src={result.data.link} />
-                            <div className='hover-overlay' 
+                            <div className='hover-overlay'
                                 style={{width : result.data.width > 350 ? 350 : result.data.width}}
                             />
                             <div className='hover-button'>
-                                <IconButton 
-                                    id={result.data.id} 
+                                <IconButton
+                                    id={result.data.id}
                                     onClick={() => {
                                         this.setState({ images : { ...this.state.images,[result.data.id] : null } })
                                     }}
@@ -143,7 +146,7 @@ class NotesContainer extends Component {
                         </div>
                     this.setState({images : newImages, imageIsLoading : false })
                 })
-            }    
+            }
         }
     }
 
@@ -172,18 +175,18 @@ class NotesContainer extends Component {
         const colorPicker = () => {
             let colors = ['#ffffff','#ffcdd2','#e1bee7','#bbdefb','#b2ebf2','#dcedc8','#ff7f13','#feff89','#ffeb3b']
             // let colors = ['#ffffff','#b973b3','#feff89','#ff28ad','#a4e631','#ffe600','#ff7f13','#afffff']
-            return colors.map((color) => 
+            return colors.map((color) =>
             <Avatar
                 key={color}
                 backgroundColor={color}
                 style={{margin:5}}
                 onClick={()=> { this.setState({ inputColor : color })} }
                 className='color-samples'
-            />)            
+            />)
         }
-        
+
         return (
-            <div 
+            <div
                 style={ this.props.margin ? { marginLeft:275,marginRight:25 } : { marginLeft : 0 }}
             >
                 <div className='row centered'>
@@ -199,6 +202,7 @@ class NotesContainer extends Component {
                             inputStyle={{color:'gray',fontFamily:'Roboto Condensed'}}
                         />
 
+
                         <TextField
                             multiLine
                             id="text-field-controlled"
@@ -209,35 +213,49 @@ class NotesContainer extends Component {
                             hintText='Escreva algo aqui...'
                             underlineStyle={{width:100+'%',color:'#808080'}}
                             underlineFocusStyle={{width:100+'%',borderColor:'#808080'}}
-                        />
+                        />,
+
+
 
                         <div className='row center canvas-container'>
                             { this.state.imageIsLoading ? <CircularProgress style={{ margin : 20 }}/> : null }
                             { _.values(this.state.images).reverse() }
                             <img className='note-input-img' src={this.state.imgSrc}/>
                         </div>
-                        
-                        <div className='note-input-options'>    
-                            <input id="photoInput" 
-                                type="file" 
-                                ref={(ref) => this.photoInput = ref } 
+
+                        <div className='note-input-options'>
+                            <input id="photoInput"
+                                type="file"
+                                ref={(ref) => this.photoInput = ref }
                                 style={{display:'none'}}
                             />
 
-                            { this.photoInput 
-                            ? 
+                            { this.photoInput
+                            ?
                             <IconButton onClick={() => { this.photoInput.click() }}>
                                 <FontIcon className="material-icons" > add_a_photo </FontIcon>
                             </IconButton>
                             : null
                             }
-                            
+
+                            <IconButton onClick={() => this.setState({emoji:true})}>
+                                <FontIcon className="material-icons" > {'insert_emoticon'} </FontIcon>
+                            </IconButton>
+
+                            {
+                              this.state.emoji ?
+                                <EmojiPicker
+
+                                onChange={(e) => this.setState({inputText:(this.state.inputText+e.unicode), emoji:false})} search={true} />
+                                :
+                                ''
+                            }
 
                             <IconButton onClick={this.handleLockPress}>
                                 <FontIcon className="material-icons" > {this.state.private ? 'lock' : 'lock_open'} </FontIcon>
                             </IconButton>
 
-                            <IconButton 
+                            <IconButton
                                 data-tip data-for='colorPicker'
                             >
                                 <FontIcon className="material-icons" >format_paint</FontIcon>
@@ -249,9 +267,9 @@ class NotesContainer extends Component {
                             <IconButton onClick={this.handleNoteSubmit}>
                                 <FontIcon className="material-icons" >add</FontIcon>
                             </IconButton>
-                            
+
                         </div>
-                        
+
                     </div>
                 </div>
 
@@ -259,22 +277,22 @@ class NotesContainer extends Component {
                 <div className='row container'>
                 <Masonry
                     enableResizableChildren={true}
-                    className={'masonry'} // default '' 
+                    className={'masonry'} // default ''
                     elementType={'div'} // default 'div'
                     style={masonryStyle}
                     options={masonryOptions} // default {}
                     disableImagesLoaded={false} // default false
                     updateOnEachImageLoad={false}  // default false and works only if disableImagesLoaded is false
                 >
-                    { filteredData().map((note) => 
-                            <Note 
-                                remove={this.removeNote} 
-                                update={this.updateNote} 
-                                key={'note-'+note.id} 
-                                info={note} 
+                    { filteredData().map((note) =>
+                            <Note
+                                remove={this.removeNote}
+                                update={this.updateNote}
+                                key={'note-'+note.id}
+                                info={note}
                             /> )
                     }
-                
+
                 </Masonry>
                 </div>
             </div>
