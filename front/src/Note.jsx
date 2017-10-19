@@ -247,7 +247,14 @@ class Note extends Component {
                                 className='user-avatar'
                                 />
                             {moment(this.state.createdAt).fromNow()} </span>
-                                : <span> Atualizado por <b>{this.state.ownerUsername}</b> {moment(this.state.updatedAt).fromNow()} </span>
+                                
+                                : <span> Criado por <b>{this.state.ownerUsername} </b> 
+                                <Avatar
+                                src={this.state.ownerAvatar}
+                                size={30}
+                                className='user-avatar'
+                                />
+                                Atualizado por <b>{this.state.lastUser}</b> {moment(this.state.updatedAt).fromNow()} </span>
                             }
                             
                             <div style={{ textAlign: 'right' }}>
