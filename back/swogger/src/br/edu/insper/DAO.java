@@ -33,7 +33,7 @@ public class DAO {
 			e1.printStackTrace();
 		} 
 		try {
-			this.connection = DriverManager.getConnection("jdbc:mysql://localhost/notesdb", "root", "07061997");
+			this.connection = DriverManager.getConnection("jdbc:mysql://localhost/lembrae", "root", "root");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
