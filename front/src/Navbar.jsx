@@ -131,7 +131,11 @@ class Navbar extends Component {
                     <FlatButton style={{height:'auto',lineHeight:'none'}}
                         onTouchTap={this.handleTouchTap}
                         hoverColor={ 'rgba(130,130,130,0.1)' }>
-                        <Avatar src={this.state.photoURL} className='userImg' />
+                        <Avatar
+                        src={ auth.getUser().avatar }
+                        size={30}
+                        className='user-avatar'
+                        />
                         <Popover
                             open={this.state.open}
                             anchorEl={this.state.anchorEl}
@@ -177,6 +181,12 @@ class Navbar extends Component {
                     leftIcon={<FontIcon className="material-icons">face</FontIcon>}
                     primaryText='Minhas notas'
                     onClick={() => { this.props.setFilter('mine') }}
+                />
+
+                <MenuItem style={{marginTop:20}}
+                    leftIcon={<FontIcon className="material-icons">check</FontIcon>}
+                    primaryText='Concluídas'
+                    onClick={() => { this.props.setFilter('concluded') }}
                 />
 
                 {/* final da navbar */}

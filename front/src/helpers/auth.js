@@ -6,13 +6,17 @@ import {EventEmitter} from 'events'
 const emitter = new EventEmitter();
 emitter.setMaxListeners(20)
 
-const baseUrl = window.location.origin+'/'
 
-var user = { 
-    id : null ,
-    email : null,
-    username : null,
-    password : null
+const baseUrl = 'http://localhost:8080/root/'
+
+
+
+var user = {
+  id: null,
+  email: null,
+  username: null,
+  password: null,
+  avatar:null
 }
 
 export default window.auth = {
@@ -54,8 +58,8 @@ export default window.auth = {
         return user
     },
 
-    register : (email,username,password,callback) => {
-        console.log('Registering with',email,password)
+    register : (email,username,password,imageBlob,callback) => {
+        console.log('Registering with',email,password,imageBlob)
         fetch(baseUrl + 'register', {
             method: 'POST',
             body : JSON.stringify({
@@ -63,7 +67,9 @@ export default window.auth = {
                 payload : {
                     email : email,
                     username : username,
-                    password : password
+                    password : password,
+                    avatar: imageBlob
+                    
                 }
             })
         }).then((response) => {
