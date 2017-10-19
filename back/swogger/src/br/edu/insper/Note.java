@@ -16,9 +16,11 @@ public class Note {
 	private String title;
 	private String lastUser;
 	private String ownerAvatar;
+	private String lastAvatar;
 	
 	public Note(Integer id,Integer userId,Timestamp createdAt,Timestamp updatedAt,String content,String color,
-			Boolean isPrivate, Boolean isConcluded, String commentary, String ownerUsername,String title, String lastUser, String ownerAvatar){
+			Boolean isPrivate, Boolean isConcluded, String commentary, String ownerUsername,String title, String lastUser,
+			String ownerAvatar, String lastAvatar){
 		this.id = id;
 		this.userId = userId;
 		this.createdAt = createdAt.getTime();
@@ -32,6 +34,7 @@ public class Note {
 		this.title = title;
 		this.lastUser = lastUser;
 		this.ownerAvatar = ownerAvatar;
+		this.lastAvatar = lastAvatar;
 	}
 
 	public Integer getId() {
@@ -136,6 +139,12 @@ public class Note {
 	}
 	public void setOwnerAvatar(String ownerAvatar){
 		this.ownerAvatar = ownerAvatar;
+	}
+	public String getLastAvatar(){
+		return lastAvatar;
+	}
+	public void setLastrAvatar(String lastAvatar){
+		this.lastAvatar = lastAvatar;
 	}
 		
 

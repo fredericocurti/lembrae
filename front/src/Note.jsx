@@ -73,6 +73,7 @@ class Note extends Component {
         if (this.state[e.currentTarget.id] != e.target.value) {
             this.setState({ [e.currentTarget.id]: e.target.value });
             this.setState({lastUser: auth.getUser().username})
+            this.setState({lastAvatar: auth.getUser().avatar})
             this.delayedUpdate()
             
         }
@@ -254,7 +255,13 @@ class Note extends Component {
                                 size={30}
                                 className='user-avatar'
                                 />
-                                Atualizado por <b>{this.state.lastUser}</b> {moment(this.state.updatedAt).fromNow()} </span>
+                                Atualizado por <b>{this.state.lastUser}</b> 
+                                <Avatar
+                                src={this.state.lastAvatar}
+                                size={30}
+                                className='user-avatar'
+                                />
+                                {moment(this.state.updatedAt).fromNow()} </span>
                             }
                             
                             <div style={{ textAlign: 'right' }}>

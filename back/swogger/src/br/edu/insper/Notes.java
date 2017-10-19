@@ -56,7 +56,8 @@ public class Notes extends HttpServlet {
 						test.put("content", resultList.get(i).getContent());
 						test.put("updatedAt", resultList.get(i).getUpdatedAt());
 						test.put("ownerAvatar", resultList.get(i).getOwnerAvatar());
-//						System.out.println(resultList.get(0).getlastUser());
+						test.put("lastAvatar", resultList.get(i).getLastAvatar());
+//						System.out.println(resultList.get(i).getLastAvatar());
 //						System.out.println(test.toString());
 						res.put(test);
 					}
