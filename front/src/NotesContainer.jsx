@@ -13,6 +13,7 @@ import auth from './helpers/auth.js'
 import EmojiPicker from 'emojione-picker';
 import '../node_modules/emojione-picker/css/picker.css';
 import Emojify from 'react-emojione';
+import WordCloud from './WordCloud';
 // import ImagesUploader from 'react-images-uploader';
 // import 'react-images-uploader/styles.css';
 // import 'react-images-uploader/font.css';
@@ -190,6 +191,7 @@ class NotesContainer extends Component {
                 style={ this.props.margin ? { marginLeft:275,marginRight:25 } : { marginLeft : 0 }}
             >
                 <div className='row centered'>
+
                     <div className='note-input-wrapper' style={{backgroundColor : this.state.inputColor }}>
                         <TextField
                             id="text-field-controlled"
@@ -292,8 +294,8 @@ class NotesContainer extends Component {
                                 info={note}
                             /> )
                     }
-
                 </Masonry>
+                <WordCloud/>
                 </div>
             </div>
         );

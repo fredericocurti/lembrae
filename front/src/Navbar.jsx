@@ -10,6 +10,7 @@ import Drawer from 'material-ui/Drawer';
 import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
 
+
 import logo from './logo.png';
 import auth from './helpers/auth.js'
 
@@ -178,6 +179,7 @@ class Navbar extends Component {
                     primaryText='Minhas notas'
                     onClick={() => { this.props.setFilter('mine') }}
                 />
+
 
                 {/* final da navbar */}
                 <div className='sidebar-bottom-item'>
