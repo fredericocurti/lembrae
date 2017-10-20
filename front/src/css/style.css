@@ -173,7 +173,6 @@ input {
 .card-title {
   color: black;
   font-weight: 400 !important;
-  font-family: Roboto Condensed;
   font-size: 1.25em !important;
   width: 100%;
   min-height: 20px;
@@ -242,4 +241,10 @@ input {
 
 .note-content{
   padding-bottom:5px;
+}
+
+.word-cloud{
+  align-items: center;
+  display: flex;
+  justify-content: center;
 }

@@ -33,15 +33,32 @@ public class Notes extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		System.out.println("GET Request received");
 		// Request
+		response.setCharacterEncoding("utf-8");
 		String notesQuery = request.getParameter("q");
 		Integer uid = Integer.decode(request.getParameter("uid"));
 		System.out.print("User " + request.getParameter("user") + " Requested " + notesQuery);
 		DAO dao = new DAO();
-		dao.getNotes(uid, notesQuery,
-				(Map<String,Object> result) -> {
+		dao.getNotes(uid, notesQuery,(Map<String,Object> result) -> {
 					@SuppressWarnings("unchecked")
 					List<Note> resultList = (List<Note>) result.get("notes");
-					JSONArray res = new JSONArray(resultList);
+					JSONArray res = new JSONArray();
+					for (int i=0; i<resultList.size(); i++) {
+						JSONObject test = new JSONObject();
+						test.put("lastUser", resultList.get(i).getlastUser());
+						test.put("createdAt", resultList.get(i).getCreatedAt());
+						test.put("color", resultList.get(i).getColor());
+						test.put("ownerUsername", resultList.get(i).getOwnerUsername());
+						test.put("id", resultList.get(i).getId());
+						test.put("isPrivate", resultList.get(i).getIsPrivate());
+						test.put("title", resultList.get(i).getTitle());
+						test.put("userId", resultList.get(i).getUserId());
+						test.put("content", resultList.get(i).getContent());
+						test.put("updatedAt", resultList.get(i).getUpdatedAt());
+//						System.out.println(resultList.get(0).getlastUser());
+//						System.out.println(test.toString());
+						res.put(test);
+					}
+					
 					try {
 						response.getWriter().println(res);
 					} catch (IOException e) {
@@ -75,6 +92,7 @@ public class Notes extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		System.out.println("POST Request received - Add note");
 		// Request
+		response.setCharacterEncoding("utf-8");
 		String test = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
 		JSONObject obj = new JSONObject(test);
 		JSONObject payload = obj.getJSONObject("payload");
