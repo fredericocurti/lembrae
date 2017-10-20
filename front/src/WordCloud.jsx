@@ -84,7 +84,7 @@ class WordCloud extends Component {
                   style={{textAlign: 'center', width: '400px'}}
                   className="simple-cloud"
                   colorOptions = {options}
-                  onClick={() => {console.log("Se alguem fizer a busca, da pra implementar por aki!")} />
+                  onClick={() => {console.log("Se alguem fizer a busca, da pra implementar por aki!")}} />
             </div>
         );
     }
