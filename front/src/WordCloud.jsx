@@ -22,14 +22,14 @@ class WordCloud extends Component {
 
     componentWillMount() {
         store.subscribe('notes',(notes) => {
-          console.log("And now we hope:");
-          console.log(notes);
+          //console.log("And now we hope:");
+          //console.log(notes);
 
           var words = [];
 
           Object.entries(notes).forEach(([k,v]) => {
-             console.log(k,v)
-             console.log("😁");
+            // console.log(k,v)
+             //console.log("😁");
              v.title.split(" ").forEach((t) =>{
                words.push(this.upperFirstLetter(t));
              })
@@ -38,7 +38,7 @@ class WordCloud extends Component {
              })
           })
 
-          console.log(words);
+          //console.log(words);
           this.data = [];
           words.forEach((word) => {
             var exist = false;
@@ -56,8 +56,8 @@ class WordCloud extends Component {
             }
           });
 
-          console.log("done");
-          console.log(this.data);
+          //console.log("done");
+          //console.log(this.data);
            this.setState({ wordCount : this.data})
         })
     }
@@ -84,10 +84,7 @@ class WordCloud extends Component {
                   style={{textAlign: 'center', width: '400px'}}
                   className="simple-cloud"
                   colorOptions = {options}
-                  onClick={() => {console.log(this.state.wordCount.sort((w1,w2) => {
-                    return w2.count - w1.count
-                  }
-                ).slice(0,26))}} />
+                  onClick={() => {console.log("Se alguem fizer a busca, da pra implementar por aki!")} />
             </div>
         );
     }
